@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href={{ css_url }} />
+</head>
+    <body>
+        <h1>Video Metadata Report</h1>
+        <div class="card container">
+            <div class="row">
+                <div class="col-3">
+                    <img class="videoImg" src={{ video.img_url }} alt="Avatar">
+                </div>
+                <div class="col-9">
+                    <div class="row">
+                        <div class="col">
+                            <h4><b>Filename</b></h4>
+                            <p>{{ video.file_name }}</p>
+                        </div>
+                        <div class="col">
+                            <h4><b>Codec</b></h4>
+                            {% if video.codec_name|length %}
+                            <p>{{ video.codec_name }}</p>
+                            {% else %}
+                            <p>N/A</p>
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            <h4><b>Codec Timebase</b></h4>
+                            {% if video.codec_time_base|length %}
+                            <p>{{ video.codec_time_base }}</p>
+                            {% else %}
+                            <p>N/A</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h4><b>Resolution</b></h4>
+                            <p>{{ video.width }} x {{ video.height }}</p>
+                        </div>
+                        <div class="col">
+                            <h4><b>Display Ratio</b></h4>
+                          {% if video.display_aspect_ratio|length %}
+                            <p>{{ video.display_aspect_ratio }}</p>
+                          {% else %}
+                            <p>N/A</p>
+                          {% endif %}
+                        </div>
+                        <div class="col">
+                            <h4><b>Pixel Format</b></h4>
+                          {% if video.pix_fmt|length %}
+                            <p>{{ video.pix_fmt }}</p>
+                          {% else %}
+                            <p>N/A</p>
+                          {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <h4><b>Duration</b></h4>
+                          {% if video.duration|length %}
+                            <p>{{ video.duration }} s</p>
+                          {% else %}
+                            <p>N/A</p>
+                          {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h1>Bitrate per Frame</h1>
+            {{bitrate_div | safe}}
+        <h1>Quantization Parameters per Frame</h1>
+            {{qp_div | safe}}
+        <h1>QP / Bitrate per Frame</h1>
+            {{c_plot | safe}}
+    </body>
+</html>
