@@ -2,7 +2,8 @@ import shlex
 import subprocess
 import json
 
-from const import qp_str, pts_time_str, y_str, streams_str, x_str, side_data_str
+from const import qp_str, pts_time_str, y_str, streams_str, x_str, side_data_str, data_js_path, packets_str
+from output import write_to_js
 
 
 # query data
@@ -16,7 +17,9 @@ def get_packets_info(file_path):
     args = shlex.split(cmd)
     args.append(file_path)
     output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
-    output = json.loads(output)
+    output = json.loads(output)[packets_str]
+    # output frame timestamps to js
+    write_to_js(output, data_js_path)
     return output
 
 

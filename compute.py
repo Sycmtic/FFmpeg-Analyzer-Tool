@@ -12,7 +12,7 @@ def generate_bitrate_qp_graph(file_path):
     :return: <div> bitrate graph, <div> qp graph, <div> combined graph
     """
     packets_info = get_packets_info(file_path)
-    b_data = compute_bitrate(packets_info[packets_str])
+    b_data = compute_bitrate(packets_info)
     qp_data = get_qp_data(file_path)
     bitrate_graph = generate_line_graph(b_data)
     qp_graph = generate_line_graph(qp_data)

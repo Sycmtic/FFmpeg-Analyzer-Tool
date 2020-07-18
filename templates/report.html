@@ -71,11 +71,69 @@
                 </div>
             </div>
         </div>
+
         <h1>Bitrate per Frame</h1>
             {{bitrate_div | safe}}
         <h1>Quantization Parameters per Frame</h1>
             {{qp_div | safe}}
         <h1>QP / Bitrate per Frame</h1>
             {{c_plot | safe}}
+
+        <!-- Video Container -->
+        <div class="container">
+            <!-- vis video select -->
+            <div class="row" id="video-selector-container">
+                <div class="col-3">
+                    <label for="video-selector">Video Type:</label>
+                    <select id="video-selector" class="custom-select">
+                        <option value="qp" selected>QP Visualization</option>
+                        <option value="bs">Block Structure Visualization</option>
+                        <option value="mb-type">Block Type Visualization</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- qp vis video -->
+            <div id="qp-video-container">
+                <div class="row">
+                    <video class="center" id="qp-video" width="1280" height="720" controls>
+                        <source src="./qp_vis.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <!-- block structure vis video -->
+            <div id="bs-video-container">
+                <div class="row">
+                    <video class="center" id="bs-video" width="1280" height="720" controls>
+                        <source src="./bs_vis.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <!-- block type vis video -->
+            <div id="mb-type-video-container">
+                <div class="row">
+                    <video class="center" id="mb-type-video" width="1280" height="720" controls>
+                        <source src="./b_type_vis.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+
+            <!-- pre/next frame button-->
+            <div class="row">
+                <div class="center col-6 offset-3">
+                    <button type="button" class="btn btn-outline-primary" id="pre-frame-btn">
+                        prev
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="nxt-frame-btn">
+                        next
+                    </button>
+                </div>
+            </div>
+        </div>
     </body>
+    <script type="text/javascript" src={{data_js_url}}></script>
+    <script type="text/javascript" src={{js_url}}></script>
 </html>
