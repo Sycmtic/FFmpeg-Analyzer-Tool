@@ -121,15 +121,38 @@
                 </div>
             </div>
 
-            <!-- pre/next frame button-->
+            <!-- button bar -->
             <div class="row">
-                <div class="center col-6 offset-3">
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-primary" id="frame-detail-btn">
+                        Frame Detail
+                    </button>
+                </div>
+                <div class="center col-6">
                     <button type="button" class="btn btn-outline-primary" id="pre-frame-btn">
                         prev
                     </button>
                     <button type="button" class="btn btn-outline-primary" id="nxt-frame-btn">
                         next
                     </button>
+                </div>
+            </div>
+
+            <!-- frame detail page -->
+            <div id="frame-detail-container">
+                <div class="row">
+                    <div class="col">
+                        <h4><b>PTS</b></h4>
+                        <p id="fd-pts">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Pixel Format</b></h4>
+                        <p id="fd-fmt">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Quantization Parameter</b></h4>
+                        <p id="fd-qp">N/A</p>
+                    </div>
                 </div>
             </div>
         </div>

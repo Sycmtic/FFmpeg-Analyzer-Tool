@@ -1,9 +1,9 @@
 import argparse
 
 from compute import generate_bitrate_qp_graph
-from const import qp_str, bs_str, b_type_str
-from ffmpeg import get_basic_info, generate_vis_video
-from output import write_to_report_folder
+from const import qp_str, bs_str, b_type_str, data_js_path
+from ffmpeg import get_basic_info, generate_vis_video, get_frame_data
+from output import write_to_report_folder, write_to_js
 
 
 def main():
@@ -31,6 +31,9 @@ def vis_video_exe(file_path, folder_path):
     :param file_path: input video path
     :param folder_path: output folder path
     """
+    data = get_frame_data(file_path)
+    write_to_js('frame_map', data, data_js_path, 'a')
+
     try:
         generate_vis_video(file_path, folder_path, qp_str)
         generate_vis_video(file_path, folder_path, bs_str)
