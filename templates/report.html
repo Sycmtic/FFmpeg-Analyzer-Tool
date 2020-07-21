@@ -87,6 +87,7 @@
                     <label for="video-selector">Video Type:</label>
                     <select id="video-selector" class="custom-select">
                         <option value="qp" selected>QP Visualization</option>
+                        <option value="mv">Motion Vector Visualization</option>
                         <option value="bs">Block Structure Visualization</option>
                         <option value="mb-type">Block Type Visualization</option>
                     </select>
@@ -96,8 +97,17 @@
             <!-- qp vis video -->
             <div id="qp-video-container">
                 <div class="row">
-                    <video class="center" id="qp-video" width="1280" height="720" controls>
+                    <video class="vis-video center" id="qp-video" width="1280" height="720" controls>
                         <source src="./qp_vis.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <!-- mv vis video -->
+            <div id="mv-video-container">
+                <div class="row">
+                    <video class="vis-video center" id="mv-video" width="1280" height="720" controls>
+                        <source src="./mv_vis.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>
@@ -105,7 +115,7 @@
             <!-- block structure vis video -->
             <div id="bs-video-container">
                 <div class="row">
-                    <video class="center" id="bs-video" width="1280" height="720" controls>
+                    <video class="vis-video center" id="bs-video" width="1280" height="720" controls>
                         <source src="./bs_vis.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
@@ -114,22 +124,59 @@
             <!-- block type vis video -->
             <div id="mb-type-video-container">
                 <div class="row">
-                    <video class="center" id="mb-type-video" width="1280" height="720" controls>
-                        <source src="./b_type_vis.mp4" type="video/mp4">
+                    <video class="vis-video center" id="mb-type-video" width="1280" height="720" controls>
+                        <source src="./mb_type_vis.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>
             </div>
 
-            <!-- pre/next frame button-->
+            <!-- button bar -->
             <div class="row">
-                <div class="center col-6 offset-3">
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-primary" id="frame-detail-btn">
+                        Frame Detail
+                    </button>
+                </div>
+                <div class="center col-6">
                     <button type="button" class="btn btn-outline-primary" id="pre-frame-btn">
                         prev
                     </button>
                     <button type="button" class="btn btn-outline-primary" id="nxt-frame-btn">
                         next
                     </button>
+                </div>
+            </div>
+
+            <!-- frame detail page -->
+            <div id="frame-detail-container">
+                <div class="row">
+                    <div class="col">
+                        <h4><b>PTS</b></h4>
+                        <p id="fd-pts">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Pixel Format</b></h4>
+                        <p id="fd-fmt">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Quantization Parameter</b></h4>
+                        <p id="fd-qp">N/A</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h4><b>Type</b></h4>
+                        <p id="fd-type">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>isKey</b></h4>
+                        <p id="fd-key">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Checksum</b></h4>
+                        <p id="fd-checksum">N/A</p>
+                    </div>
                 </div>
             </div>
         </div>

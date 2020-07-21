@@ -41,11 +41,19 @@ h1 {
     margin: 10px 10px;
 }
 
+#mv-video-container {
+    display: none;
+}
+
 #bs-video-container {
     display: none;
 }
 
 #mb-type-video-container {
+    display: none;
+}
+
+#frame-detail-container {
     display: none;
 }
 

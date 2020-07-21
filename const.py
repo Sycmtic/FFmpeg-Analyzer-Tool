@@ -2,8 +2,9 @@ import os
 
 # ffmpeg command
 qp_str = 'qp'
+mv_str = 'mv'
 bs_str = 'bs'
-b_type_str = 'b_type'
+b_type_str = 'mb_type'
 
 # tool attributes
 working_dict_path = os.getcwd()
@@ -27,3 +28,11 @@ size_str = 'size'
 streams_str = 'streams'
 side_data_str = 'side data'
 codec_type_str = 'codec_type'
+frame_index_str = 'n'
+fmt_str = 'fmt'
+type_str = 'type'
+is_key_str = 'iskey'
+checksum_str = 'checksum'
+plane_checksum_str = 'plane_checksum'
+mean_str = 'mean'
+stdev_str = 'stdev'

@@ -2,8 +2,7 @@ import os
 import jinja2
 import json
 
-from const import file_name_str, report_file_path, report_css_path, img_url_str, report_js_path, data_js_path, \
-    pts_time_str, codec_type_str
+from const import file_name_str, report_file_path, report_css_path, img_url_str, report_js_path, data_js_path
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=True)
@@ -44,24 +43,14 @@ def write_to_html(file_name, folder_path, basic_info, bitrate_div, qp_div, c_plo
     f.close()
 
 
-def parse_frame_timestamp(packets):
-    """
-    Extract frame timestamp from packet data
-    :param packets: packet data
-    :return: frame timestamp
-    """
-    data = []
-    for packet in packets:
-        if packet[codec_type_str] == 'video':
-            data.append(packet[pts_time_str])
-    return data
-
-
-def write_to_js(data, file_path):
+def write_to_js(name, data, file_path, mode):
     """
     write data to javascript file
-    :param data: dict
+    :param name: var name in javascript
+    :param data: input data
     :param file_path: ouput json file path
+    :param mode: 'w' overwrite the file, 'a' append to the end of file
     """
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write('var frame_ts = %s;' % json.dumps(parse_frame_timestamp(data)))
+    with open(file_path, mode, encoding='utf-8') as f:
+        f.write('var ' + name + ' = %s;' % json.dumps(data))
+    f.close()
