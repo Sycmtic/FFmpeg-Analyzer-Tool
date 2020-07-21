@@ -9,15 +9,16 @@
     <body>
         <h1>Video Metadata Report</h1>
         <div class="card container">
+            {% for video in stream_info.video_stream %}
             <div class="row">
                 <div class="col-3">
-                    <img class="videoImg" src={{ video.img_url }} alt="Avatar">
+                    <img class="videoImg" src={{ stream_info.video_img_url }} alt="Avatar">
                 </div>
                 <div class="col-9">
                     <div class="row">
                         <div class="col">
                             <h4><b>Filename</b></h4>
-                            <p>{{ video.file_name }}</p>
+                            <p>{{ stream_info.file_name }}</p>
                         </div>
                         <div class="col">
                             <h4><b>Codec</b></h4>
@@ -70,6 +71,66 @@
                     </div>
                 </div>
             </div>
+            {% endfor %}
+        </div>
+        <div class="card container">
+            {% for audio in stream_info.audio_stream %}
+            <div class="row">
+                <div class="col-3">
+                    <img class="audioImg" src={{ stream_info.audio_img_url }} alt="Avatar">
+                </div>
+                <div class="col-9">
+                    <div class="row">
+                        <div class="col">
+                            <h4><b>Filename</b></h4>
+                            <p>{{ stream_info.file_name }}</p>
+                        </div>
+                        <div class="col">
+                            <h4><b>Codec</b></h4>
+                            {% if audio.codec_name|length %}
+                            <p>{{ audio.codec_name }}</p>
+                            {% else %}
+                            <p>N/A</p>
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            <h4><b>Codec Timebase</b></h4>
+                            {% if audio.codec_time_base|length %}
+                            <p>{{ audio.codec_time_base }}</p>
+                            {% else %}
+                            <p>N/A</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h4><b>Channels</b></h4>
+                          {% if audio.channels %}
+                            <p>{{ audio.channels }}</p>
+                          {% else %}
+                            <p>N/A</p>
+                          {% endif %}
+                        </div>
+                        <div class="col">
+                            <h4><b>Sample Format</b></h4>
+                          {% if audio.sample_fmt|length %}
+                            <p>{{ audio.sample_fmt }}</p>
+                          {% else %}
+                            <p>N/A</p>
+                          {% endif %}
+                        </div>
+                        <div class="col">
+                            <h4><b>Duration</b></h4>
+                          {% if audio.duration|length %}
+                            <p>{{ audio.duration }}</p>
+                          {% else %}
+                            <p>N/A</p>
+                          {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
         <h1>Bitrate per Frame</h1>
             {{bitrate_div | safe}}
