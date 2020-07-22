@@ -38,9 +38,9 @@ def get_packets_info(file_path):
     return output
 
 
-def get_basic_info(file_path):
+def get_stream_info(file_path):
     """
-    Get basic video information using ffprobe
+    Get video stream information using ffprobe
     :param file_path input video file path
     :return information of stream
     """
@@ -49,7 +49,11 @@ def get_basic_info(file_path):
     args.append(file_path)
     output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
     output = json.loads(output)
-    return output[streams_str][0]
+    streams = output[streams_str]
+    data = {video_stream_str: [], audio_stream_str: []}
+    for stream in streams:
+        data[stream[codec_type_str] + '_stream'].append(stream)
+    return data
 
 
 def generate_vis_video(file_path, folder_path, op):

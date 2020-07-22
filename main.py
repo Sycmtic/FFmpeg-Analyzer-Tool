@@ -2,7 +2,7 @@ import argparse
 
 from compute import generate_bitrate_qp_graph
 from const import qp_str, bs_str, b_type_str, data_js_path, mv_str
-from ffmpeg import get_basic_info, generate_vis_video, get_frame_data
+from ffmpeg import get_stream_info, generate_vis_video, get_frame_data
 from output import write_to_report_folder, write_to_js
 
 
@@ -20,9 +20,9 @@ def report_exe(file_name, file_path, folder_path):
     :param file_path: input video path
     :param folder_path: output folder path
     """
-    basic_info = get_basic_info(file_path)
+    stream_info = get_stream_info(file_path)
     bitrate_plot, qp_plot, combined_graph = generate_bitrate_qp_graph(file_path)
-    write_to_report_folder(file_name, folder_path, basic_info, bitrate_plot, qp_plot, c_plot=combined_graph)
+    write_to_report_folder(file_name, folder_path, stream_info, bitrate_plot, qp_plot, c_plot=combined_graph)
 
 
 def vis_video_exe(file_path, folder_path):

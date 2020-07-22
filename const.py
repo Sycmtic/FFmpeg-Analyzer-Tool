@@ -5,13 +5,16 @@ qp_str = 'qp'
 mv_str = 'mv'
 bs_str = 'bs'
 b_type_str = 'mb_type'
+video_stream_str = 'video_stream'
+audio_stream_str = 'audio_stream'
 
 # tool attributes
 working_dict_path = os.getcwd()
 data_str = 'data'
 x_str = 'x'
 y_str = 'y'
-img_url_str = 'img_url'
+video_img_url_str = 'video_img_url'
+audio_img_url_str = 'audio_img_url'
 file_name_str = 'file_name'
 report_file_path = '/report/report.html'
 report_css_path = working_dict_path + '/styles/report.css'
