@@ -1,19 +1,49 @@
 let videoSelected = "qp";
-let videoSuffix = "-video";
+let videoCurrentTime = 0;
+let videos = document.getElementsByClassName("vis-video");
 
 
-const get_current_time = () => document.getElementById(videoSelected + videoSuffix).currentTime;
+const add_video_event_listener = () => {
+    Array.from(videos).forEach((video) => {
+        video.addEventListener("play", () => {
+            Array.from(videos).forEach((video) => {
+                video.play();
+            });
+        });
+        video.addEventListener("pause", () => {
+            Array.from(videos).forEach((video) => {
+                video.pause();
+            });
+            videoCurrentTime = video.currentTime;
+            // in case of playback delay
+            update_current_time();
+            update_frame_detail_page();
+        });
+        video.addEventListener("seeking", () => {
+            if (video.currentTime === videoCurrentTime) return;
+            videoCurrentTime = video.currentTime;
+            update_current_time();
+            update_frame_detail_page();
+        });
+    });
+}
+add_video_event_listener();
+
+
+const update_current_time = () => {
+    Array.from(videos).forEach((video) => {
+        video.currentTime = videoCurrentTime;
+    });
+}
 
 
 document.getElementById("nxt-frame-btn").addEventListener("click", () => {
-    let videoId = videoSelected + videoSuffix;
-    let vid = document.getElementById(videoId);
-    let currentTime = vid.currentTime;
+    let currentTime = videoCurrentTime;
     let offset = 0.00001;
     console.log("current time: " + currentTime);
     for (let i = 0; i < frame_ts.length; i++) {
         if (frame_ts[i] > currentTime) {
-            vid.currentTime = Number(frame_ts[i]) + offset;
+            videos[0].currentTime = Number(frame_ts[i]) + offset;
             break;
         }
     }
@@ -21,14 +51,12 @@ document.getElementById("nxt-frame-btn").addEventListener("click", () => {
 
 
 document.getElementById("pre-frame-btn").addEventListener("click", () => {
-    let videoId = videoSelected + videoSuffix;
-    let vid = document.getElementById(videoId);
-    let currentTime = vid.currentTime;
+    let currentTime = videoCurrentTime;
     let offset = -0.00001;
     console.log("current time: " + currentTime);
     for (let i = frame_ts.length - 1; i >= 0; i--) {
         if (frame_ts[i] < currentTime) {
-            vid.currentTime = Number(frame_ts[i]) + offset;
+            videos[0].currentTime = Number(frame_ts[i]) + offset;
             break;
         }
     }
@@ -36,9 +64,8 @@ document.getElementById("pre-frame-btn").addEventListener("click", () => {
 
 
 const get_cur_frame_idx = () => {
-    let currentTime = get_current_time();
     for (let i = 0; i < frame_ts.length; i++) {
-        if (frame_ts[i] > currentTime) {
+        if (frame_ts[i] > videoCurrentTime) {
             return i - 1;
         }
     }
@@ -55,13 +82,6 @@ update_frame_detail_page = () => {
     document.getElementById("fd-key").innerText = frame_map[frame_idx].iskey === "0" ? "False" : "True";
     document.getElementById("fd-checksum").innerText = frame_map[frame_idx].checksum;
 }
-
-
-let videos = document.getElementsByClassName("vis-video");
-Array.from(videos).forEach((video) => {
-    video.addEventListener('pause', update_frame_detail_page);
-    video.addEventListener('seeking', update_frame_detail_page);
-});
 
 
 document.getElementById("frame-detail-btn").addEventListener("click", () => {

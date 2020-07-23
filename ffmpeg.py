@@ -13,7 +13,7 @@ def parse_frame_timestamp(packets):
     :return: frame timestamp
     """
     data = []
-    pre_pts_time = 0
+    pre_pts_time = -1
     for packet in packets:
         if packet[codec_type_str] == 'video' and float(packet[pts_time_str]) > pre_pts_time:
             data.append(packet[pts_time_str])
