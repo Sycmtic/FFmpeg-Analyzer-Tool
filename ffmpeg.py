@@ -72,9 +72,9 @@ def generate_vis_video(file_path, folder_path, op):
     args.append(folder_path + '/report/' + op + '_vis.mp4')
     proc = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     proc.communicate()
-    print(op + ' visualization video generated')
     if proc.returncode != 0:
-        raise Exception('No ffmpeg command found, please check the version of your ffmpeg')
+        raise Exception(op + ' video generates failed, please check the version of your ffmpeg')
+    print(op + ' visualization video generated')
 
 
 def get_qp_data(file_path):
