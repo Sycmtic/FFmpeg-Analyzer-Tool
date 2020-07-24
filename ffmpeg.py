@@ -110,20 +110,42 @@ def get_side_data_metric(line, name):
     :return: metric value
     """
     start = line.find(name) + len(name) + 1
-    end = line.find(' ', start)
+    end = line.find(';', start)
     return line[start:end]
 
 
 def get_frame_data(file_path):
     """
-    Get side data from ffmpeg using subprocess
+    Get frame data from ffprobe using subprocess
     :param file_path input video file path
     :return directory key - frame index, value: frame metrics
+    """
+    cmd = 'ffprobe -show_frames -of json'
+    args = shlex.split(cmd)
+    args.append(file_path)
+    output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+    output = json.loads(output)
+    frames = output[frames_str]
+    data = {}
+    f_idx = 0
+    for frame in frames:
+        if frame[media_type_str] == 'video':
+            data[f_idx] = frame
+            f_idx += 1
+    get_frame_side_data(file_path, data)
+    return data
+
+
+def get_frame_side_data(file_path, data):
+    """
+    Get side data from ffmpeg using subprocess
+    :param file_path input video file path
+    :param data (dict) key - frame index, value: frame metrics object
+    :return data (dict) with frame side data key - frame index, value: frame metrics object
     """
     cmd = 'ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf showinfo -f null -'
     args = shlex.split(cmd)
     proc = subprocess.Popen(args, stderr=subprocess.PIPE)
-    data = {}
     f_idx = 0
     while True:
         output = proc.stderr.readline().decode('utf-8')
@@ -133,14 +155,6 @@ def get_frame_data(file_path):
             start = output.find(frame_index_str, output.find(']')) + len(frame_index_str) + 1
             end = output.find(' ', start + 4)
             f_idx = int(output[start:end])
-            if f_idx not in data:
-                data[f_idx] = {}
-
-            data[f_idx][pts_time_str] = get_side_data_metric(output, pts_time_str)
-            data[f_idx][fmt_str] = get_side_data_metric(output, fmt_str)
-            data[f_idx][type_str] = get_side_data_metric(output, type_str)
-            data[f_idx][is_key_str] = get_side_data_metric(output, is_key_str)
-            data[f_idx][checksum_str] = get_side_data_metric(output, checksum_str)
         if output.find(side_data_str) != -1:
             data[f_idx][qp_str] = get_side_data_metric(output, qp_str)
     return data

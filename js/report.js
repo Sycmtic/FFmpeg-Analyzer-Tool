@@ -75,12 +75,20 @@ const get_cur_frame_idx = () => {
 
 update_frame_detail_page = () => {
     let frame_idx = get_cur_frame_idx();
-    document.getElementById("fd-pts").innerText = frame_map[frame_idx].pts_time;
-    document.getElementById("fd-fmt").innerText = frame_map[frame_idx].fmt;
+    document.getElementById("fd-pts-time").innerText = frame_map[frame_idx].pkt_pts_time;
+    document.getElementById("fd-pts").innerText = frame_map[frame_idx].pkt_pts;
+    document.getElementById("fd-dts").innerText = frame_map[frame_idx].pkt_dts;
+    document.getElementById("fd-type").innerText = frame_map[frame_idx].pict_type;
+    document.getElementById("fd-key").innerText = frame_map[frame_idx].key_frame === 0 ? "False" : "True";
     document.getElementById("fd-qp").innerText = frame_map[frame_idx].qp;
-    document.getElementById("fd-type").innerText = frame_map[frame_idx].type;
-    document.getElementById("fd-key").innerText = frame_map[frame_idx].iskey === "0" ? "False" : "True";
-    document.getElementById("fd-checksum").innerText = frame_map[frame_idx].checksum;
+    document.getElementById("fd-pos").innerText = frame_map[frame_idx].pkt_pos;
+    document.getElementById("fd-size").innerText = frame_map[frame_idx].pkt_size;
+    document.getElementById("fd-interlaced").innerText = frame_map[frame_idx].interlaced_frame;
+    document.getElementById("fd-top-field-first").innerText = frame_map[frame_idx].top_field_first;
+    document.getElementById("fd-repeat-pict").innerText = frame_map[frame_idx].repeat_pict;
+    document.getElementById("fd-chroma-location").innerText = frame_map[frame_idx].chroma_location;
+    document.getElementById("fd-coded-pict-num").innerText = frame_map[frame_idx].coded_picture_number;
+    document.getElementById("fd-dis-pict-num").innerText = frame_map[frame_idx].display_picture_number;
 }
 
 
