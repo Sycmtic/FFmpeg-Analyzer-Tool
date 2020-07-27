@@ -70,9 +70,9 @@ def generate_vis_video(file_path, folder_path, op):
     if which('ffmpeg') is None:
         raise Exception('No ffmpeg found in path')
     if op == mv_str:
-        cmd = '../FFmpeg/ffmpeg -flags2 +export_mvs -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
+        cmd = 'ffmpeg -flags2 +export_mvs -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
     else:
-        cmd = '../FFmpeg/ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
+        cmd = 'ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
     args = shlex.split(cmd)
     args.append(folder_path + '/report/' + op + '_vis.mp4')
     proc = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
