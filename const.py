@@ -5,6 +5,11 @@ b_type_str = 'b_type'
 video_stream_str = 'video_stream'
 audio_stream_str = 'audio_stream'
 
+# support file path
+audio_img_path = '/report/files/audio-icon.jpg'
+video_img_path = '/report/files/video.jpg'
+report_css_path = '/report/files/report.css'
+
 # tool attributes
 data_str = 'data'
 x_str = 'x'
@@ -13,7 +18,6 @@ video_img_url_str = 'video_img_url'
 audio_img_url_str = 'audio_img_url'
 file_name_str = 'file_name'
 report_file_path = '/report/report.html'
-report_css_path = '/styles/report.css'
 combined_graph_opacity = 0.7
 
 # ffmpeg attributes
