@@ -4,6 +4,7 @@ import json
 
 from const import *
 from output import write_to_js
+from shutil import which
 
 
 def parse_frame_timestamp(packets):
@@ -21,20 +22,21 @@ def parse_frame_timestamp(packets):
     return data
 
 
-# query data
 def get_packets_info(file_path):
     """
     Get packet data using ffprobe to calculate the bitrate
     :param file_path input video file path
     :return information of packet
     """
+    if which('ffprobe') is None:
+        raise Exception('No ffprobe found in path')
     cmd = 'ffprobe -show_packets -of json'
     args = shlex.split(cmd)
     args.append(file_path)
     output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
     output = json.loads(output)[packets_str]
     # output frame timestamps to js
-    write_to_js('frame_ts', parse_frame_timestamp(output), data_js_path, 'w')
+    write_to_js('frame_ts', parse_frame_timestamp(output), data_js_path, 'a')
     return output
 
 
@@ -44,6 +46,8 @@ def get_stream_info(file_path):
     :param file_path input video file path
     :return information of stream
     """
+    if which('ffprobe') is None:
+        raise Exception('No ffprobe found in path')
     cmd = 'ffprobe -show_streams -of json'
     args = shlex.split(cmd)
     args.append(file_path)
@@ -63,10 +67,11 @@ def generate_vis_video(file_path, folder_path, op):
     :param folder_path output folder path
     :param op option of codecview filter (qp, mv, bs, b_type)
     """
+    if which('ffmpeg') is None:
+        raise Exception('No ffmpeg found in path')
     if op == mv_str:
         cmd = '../FFmpeg/ffmpeg -flags2 +export_mvs -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
     else:
-        # TODO: change the path to global ffmpeg url
         cmd = '../FFmpeg/ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
     args = shlex.split(cmd)
     args.append(folder_path + '/report/' + op + '_vis.mp4')
@@ -83,6 +88,8 @@ def get_qp_data(file_path):
     :param file_path input video file path
     :return directory key - pts, value - basic qp
     """
+    if which('ffmpeg') is None:
+        raise Exception('No ffmpeg found in path')
     cmd = 'ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf showinfo -f null -'
     args = shlex.split(cmd)
     proc = subprocess.Popen(args, stderr=subprocess.PIPE)

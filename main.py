@@ -11,8 +11,8 @@ import logging
 def main():
     args = create_arg_parser()
     file_name = args.infile[args.infile.rfind('/') + 1:]
-    report_exe(file_name, args.infile, args.outfile)
     vis_video_exe(args.infile, args.outfile)
+    report_exe(file_name, args.infile, args.outfile)
 
 
 def report_exe(file_name, file_path, folder_path):
@@ -35,7 +35,7 @@ def vis_video_exe(file_path, folder_path):
     """
     pool = mp.Pool(processes=mp.cpu_count())
     data = get_frame_data(file_path)
-    res1 = pool.starmap_async(write_to_js, [('frame_map', data, data_js_path, 'a')])
+    res1 = pool.starmap_async(write_to_js, [('frame_map', data, data_js_path, 'w')])
     res2 = pool.starmap_async(generate_vis_video, [(file_path, folder_path, qp_str), (file_path, folder_path, mv_str),
                                                    (file_path, folder_path, bs_str), (file_path, folder_path, b_type_str)])
     try:

@@ -1,5 +1,3 @@
-import os
-
 # ffmpeg command
 qp_str = 'qp'
 mv_str = 'mv'
@@ -8,18 +6,22 @@ b_type_str = 'mb_type'
 video_stream_str = 'video_stream'
 audio_stream_str = 'audio_stream'
 
+# support file path
+audio_img_path = '/report/files/audio-icon.jpg'
+video_img_path = '/report/files/video.jpg'
+report_css_path = '/report/files/report.css'
+report_js_path = '/report/files/report.js'
+report_data_js_path = '/report/files/data.js'
+report_file_path = '/report/report.html'
+
 # tool attributes
-working_dict_path = os.getcwd()
 data_str = 'data'
 x_str = 'x'
 y_str = 'y'
 video_img_url_str = 'video_img_url'
 audio_img_url_str = 'audio_img_url'
 file_name_str = 'file_name'
-report_file_path = '/report/report.html'
-report_css_path = working_dict_path + '/styles/report.css'
-report_js_path = working_dict_path + '/js/report.js'
-data_js_path = working_dict_path + '/js/data.js'
+data_js_path = './js/data.js'
 combined_graph_opacity = 0.7
 
 # ffmpeg attributes

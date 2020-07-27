@@ -3,7 +3,6 @@ from ffmpeg import get_packets_info, get_qp_data
 from graph import generate_line_graph
 
 
-# data computation
 def generate_bitrate_qp_graph(file_path):
     """
     Call ffprobe to get packets info and generate bitrate graph
