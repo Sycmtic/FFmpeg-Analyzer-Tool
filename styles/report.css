@@ -67,6 +67,14 @@ h1 {
     display: block;
 }
 
+#overlay-container {
+    display: none;
+}
+
+#block-detail-container {
+    display: none;
+}
+
 #frame-detail-container {
     display: none;
 }

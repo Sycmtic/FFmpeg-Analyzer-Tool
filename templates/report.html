@@ -5,6 +5,14 @@
     <title>Report</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href={{ css_url }} />
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+      crossorigin="anonymous"></script>
+    <script
+      src={{ mapster_url }}
+      ></script>
+
 </head>
     <body>
         <h1>Video Metadata Report</h1>
@@ -157,51 +165,51 @@
 
             <!-- vis video container -->
             <div style="position: relative; width: 1280px; height: 720px;">
-                <!-- qp vis video -->
-                <div id="qp-video-container">
-                    <div class="row">
+                <div class="row">
+                    <!-- qp vis video -->
+                    <div id="qp-video-container">
                         <video class="vis-video center" id="qp-video" width="1280" height="720" controls>
                             <source src="./qp_vis.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
                     </div>
-                </div>
-                <!-- mv vis video -->
-                <div id="mv-video-container">
-                    <div class="row">
+                    <!-- mv vis video -->
+                    <div id="mv-video-container">
                         <video class="vis-video center" id="mv-video" width="1280" height="720" controls>
                             <source src="./mv_vis.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
                     </div>
-                </div>
-                <!-- block structure vis video -->
-                <div id="bs-video-container">
-                    <div class="row">
+                    <!-- block structure vis video -->
+                    <div id="bs-video-container">
                         <video class="vis-video center" id="bs-video" width="1280" height="720" controls>
                             <source src="./bs_vis.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <img id="overlay-img" src={{ stream_info.overlay_img_url }} usemap="#block-overlay-map" alt="Overlay" width="1280" height="720" style="position: absolute;" />
-                        <map id="block-overlay-map" name="block-overlay-map"></map>
                     </div>
-                </div>
-                <!-- block type vis video -->
-                <div id="mb-type-video-container">
-                    <div class="row">
+                    <!-- block type vis video -->
+                    <div id="mb-type-video-container">
                         <video class="vis-video center" id="mb-type-video" width="1280" height="720" controls>
                             <source src="./mb_type_vis.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
+                    </div>
+                    <div id="overlay-container">
+                        <img id="overlay-img" src={{ stream_info.overlay_img_url }} usemap="#block-overlay-map" alt="Overlay"/>
+                        <map id="block-overlay-map" name="block-overlay-map">
+                        </map>
                     </div>
                 </div>
             </div>
 
             <!-- button bar -->
             <div class="row">
-                <div class="col-3">
+                <div class="col-6">
                     <button type="button" class="btn btn-outline-primary" id="frame-detail-btn">
                         Frame Detail
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="block-detail-btn">
+                        Block Detail
                     </button>
                 </div>
                 <div class="center col-6">
