@@ -2,7 +2,7 @@ import argparse
 
 from compute import generate_bitrate_qp_graph
 from const import qp_str, bs_str, b_type_str, data_js_path, mv_str
-from ffmpeg import get_stream_info, generate_vis_video, get_frame_data
+from ffmpeg import get_stream_info, generate_vis_video, get_frame_data, get_block_data
 from output import write_to_report_folder, write_to_js
 import multiprocessing as mp
 import logging
@@ -45,6 +45,7 @@ def vis_video_exe(file_path, folder_path):
         logging.error(e)
     pool.close()
     pool.join()
+    b_data = get_block_data(file_path)
 
 
 def create_arg_parser():

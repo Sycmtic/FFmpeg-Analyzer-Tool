@@ -33,6 +33,7 @@ def write_to_files(folder_path):
     copyfile('./styles/report.css', folder_path + '/report.css')
     copyfile('./video.jpg', folder_path + '/video.jpg')
     copyfile('./audio-icon.jpg', folder_path + '/audio-icon.jpg')
+    copyfile('./overlay.png', folder_path + '/overlay.png')
     copyfile('./js/report.js', folder_path + '/report.js')
     copyfile('./js/data.js', folder_path + '/data.js')
 
@@ -49,11 +50,13 @@ def write_to_html(file_name, folder_path, stream_info, bitrate_div, qp_div, c_pl
     report = jinja_env.get_template('report.html')
     audio_img_url = folder_path + audio_img_path
     video_img_url = folder_path + video_img_path
+    overlay_img_url = folder_path + overlay_img_path
     css_url = folder_path + report_css_path
     js_url = folder_path + report_js_path
     data_url = folder_path + report_data_js_path
     stream_info[audio_img_url_str] = audio_img_url
     stream_info[video_img_url_str] = video_img_url
+    stream_info[overlay_img_url_str] = overlay_img_url
     stream_info[file_name_str] = file_name
     html_string = report.render(css_url=css_url, js_url=js_url, data_js_url=data_url,
                                 stream_info=stream_info, bitrate_div=bitrate_div, qp_div=qp_div, c_plot=c_plot)

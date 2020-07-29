@@ -142,5 +142,36 @@ const doc_keyUp = e => {
     }
 }
 
+
+const create_block_overlay = () => {
+    let f_idx = get_cur_frame_idx();
+    let blocks = block_per_frame[f_idx];
+    let map = document.getElementById('block-overlay-map');
+    let w_ratio = 1280 / frame_map[0]['width'];
+    let h_ratio = 720 / frame_map[0]['height'];
+    for (let i = 0; i < blocks.length; i++) {
+        let block = blocks[i];
+        let x1 = parseInt(block["src_x"]) * w_ratio;
+        let y1 = parseInt(block["src_y"]) * h_ratio;
+        let x2 = x1 + parseInt(block["width"]) * w_ratio;
+        let y2 = y1 + parseInt(block["height"]) * h_ratio;
+        let area = document.createElement('area');
+        area.coords = x1 + "," + y1 + "," + x2 + "," + y2;
+        area.id = i;
+        area.addEventListener("click", (e) => {
+            console.log(e.target)
+            let block = block_per_frame[get_cur_frame_idx()][e.target.id];
+            document.getElementById('b-x').innerText = block['src_x'];
+            document.getElementById('b-y').innerText = block['src_y'];
+            document.getElementById('b-w').innerText = block['width'];
+            document.getElementById('b-h').innerText = block['height'];
+            document.getElementById('b-qp').innerText = block['delta_qp'];
+        });
+        map.appendChild(area);
+    }
+}
+create_block_overlay();
+
+
 // register the handler
 document.addEventListener('keyup', doc_keyUp, false);

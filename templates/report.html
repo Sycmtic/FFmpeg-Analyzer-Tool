@@ -155,40 +155,45 @@
                 </div>
             </div>
 
-            <!-- qp vis video -->
-            <div id="qp-video-container">
-                <div class="row">
-                    <video class="vis-video center" id="qp-video" width="1280" height="720" controls>
-                        <source src="./qp_vis.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+            <!-- vis video container -->
+            <div style="position: relative; width: 1280px; height: 720px;">
+                <!-- qp vis video -->
+                <div id="qp-video-container">
+                    <div class="row">
+                        <video class="vis-video center" id="qp-video" width="1280" height="720" controls>
+                            <source src="./qp_vis.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
                 </div>
-            </div>
-            <!-- mv vis video -->
-            <div id="mv-video-container">
-                <div class="row">
-                    <video class="vis-video center" id="mv-video" width="1280" height="720" controls>
-                        <source src="./mv_vis.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                <!-- mv vis video -->
+                <div id="mv-video-container">
+                    <div class="row">
+                        <video class="vis-video center" id="mv-video" width="1280" height="720" controls>
+                            <source src="./mv_vis.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
                 </div>
-            </div>
-            <!-- block structure vis video -->
-            <div id="bs-video-container">
-                <div class="row">
-                    <video class="vis-video center" id="bs-video" width="1280" height="720" controls>
-                        <source src="./bs_vis.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                <!-- block structure vis video -->
+                <div id="bs-video-container">
+                    <div class="row">
+                        <video class="vis-video center" id="bs-video" width="1280" height="720" controls>
+                            <source src="./bs_vis.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <img id="overlay-img" src={{ stream_info.overlay_img_url }} usemap="#block-overlay-map" alt="Overlay" width="1280" height="720" style="position: absolute;" />
+                        <map id="block-overlay-map" name="block-overlay-map"></map>
+                    </div>
                 </div>
-            </div>
-            <!-- block type vis video -->
-            <div id="mb-type-video-container">
-                <div class="row">
-                    <video class="vis-video center" id="mb-type-video" width="1280" height="720" controls>
-                        <source src="./mb_type_vis.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                <!-- block type vis video -->
+                <div id="mb-type-video-container">
+                    <div class="row">
+                        <video class="vis-video center" id="mb-type-video" width="1280" height="720" controls>
+                            <source src="./mb_type_vis.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
                 </div>
             </div>
 
@@ -206,6 +211,32 @@
                     <button type="button" class="btn btn-outline-primary" id="nxt-frame-btn">
                         next
                     </button>
+                </div>
+            </div>
+
+            <!-- block plane -->
+            <div id="block-detail-container">
+                <div class="row">
+                    <div class="col">
+                        <h6>src_x</h6>
+                        <p id="b-x">n/a</p>
+                    </div>
+                    <div class="col">
+                        <h6>src_y</h6>
+                        <p id="b-y">n/a</p>
+                    </div>
+                    <div class="col">
+                        <h6>width</h6>
+                        <p id="b-w">n/a</p>
+                    </div>
+                    <div class="col">
+                        <h6>height</h6>
+                        <p id="b-h">n/a</p>
+                    </div>
+                    <div class="col">
+                        <h6>qp</h6>
+                        <p id="b-qp">n/a</p>
+                    </div>
                 </div>
             </div>
 

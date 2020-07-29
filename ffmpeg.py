@@ -70,9 +70,9 @@ def generate_vis_video(file_path, folder_path, op):
     if which('ffmpeg') is None:
         raise Exception('No ffmpeg found in path')
     if op == mv_str:
-        cmd = 'ffmpeg -flags2 +export_mvs -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
+        cmd = '../FFmpeg/ffmpeg -flags2 +export_mvs -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
     else:
-        cmd = 'ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
+        cmd = '../FFmpeg/ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
     args = shlex.split(cmd)
     args.append(folder_path + '/report/' + op + '_vis.mp4')
     proc = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -165,3 +165,42 @@ def get_frame_side_data(file_path, data):
         if output.find(side_data_str) != -1:
             data[f_idx][qp_str] = get_side_data_metric(output, qp_str)
     return data
+
+
+def parse_block_data(frames):
+    """
+    Parse block data from frame side data
+    :param frames: frames data
+    :return: data (dict) key - frame index, value - list of block info
+    """
+    data = {}
+    f_idx = 0
+    for frame in frames:
+        if frame[media_type_str] != 'video':
+            continue
+        side_data = None
+        for sd in frame[side_data_list_str]:
+            if sd[side_data_type_str] == 'Video encoding parameters':
+                side_data = sd
+                break
+        if side_data is not None:
+            data[f_idx] = side_data[block_data_list_str]
+        f_idx += 1
+    return data
+
+
+def get_block_data(file_path):
+    """
+    Get block data from ffprobe using subprocess
+    :param file_path: input video file path
+    :return:
+    """
+    if which('ffprobe') is None:
+        raise Exception('No ffprobe found in path')
+    cmd = '../FFmpeg/ffprobe -export_side_data +venc_params -show_frames -of json'
+    args = shlex.split(cmd)
+    args.append(file_path)
+    output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+    output = json.loads(output)[frames_str]
+    # output block data to js
+    write_to_js('block_per_frame', parse_block_data(output), data_js_path, 'a')
