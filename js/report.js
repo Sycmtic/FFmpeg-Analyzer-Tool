@@ -1,3 +1,4 @@
+let numFramePerFile = 10;
 let videoSelected = "qp";
 let videoCurrentTime = 0;
 let videos = document.getElementsByClassName("vis-video");
@@ -242,31 +243,32 @@ const load_script = (url, callback) => {
  */
 const create_block_overlay = () => {
     let f_idx = get_cur_frame_idx();
-    let file_idx = Math.floor(f_idx / 10);
+    let file_idx = Math.floor(f_idx / numFramePerFile);
     let file_name = "block_" + file_idx + ".js";
     load_script("./files/blocks/" + file_name, () => {
-        let blocks = block_per_frame[f_idx];
+        let blocks = block_per_frame[f_idx % numFramePerFile];
         let map = document.getElementById('block-overlay-map');
         let w_ratio = 1280 / frame_map[0]['width'];
         let h_ratio = 720 / frame_map[0]['height'];
         for (let i = 0; i < blocks.length; i++) {
             let block = blocks[i];
-            let x1 = parseInt(block["src_x"]) * w_ratio;
-            let y1 = parseInt(block["src_y"]) * h_ratio;
-            let x2 = x1 + parseInt(block["width"]) * w_ratio;
-            let y2 = y1 + parseInt(block["height"]) * h_ratio;
+            let x1 = parseInt(block[0]) * w_ratio;
+            let y1 = parseInt(block[1]) * h_ratio;
+            let x2 = x1 + parseInt(block[2]) * w_ratio;
+            let y2 = y1 + parseInt(block[3]) * h_ratio;
             let area = document.createElement('area');
             area.href = "#";
             area.id = i;
             area.shape = "rect";
             area.coords = x1 + "," + y1 + "," + x2 + "," + y2;
             area.addEventListener("click", (e) => {
-                let block = block_per_frame[get_cur_frame_idx()][e.target.id];
-                document.getElementById('b-x').innerText = block['src_x'];
-                document.getElementById('b-y').innerText = block['src_y'];
-                document.getElementById('b-w').innerText = block['width'];
-                document.getElementById('b-h').innerText = block['height'];
-                document.getElementById('b-qp').innerText = block['delta_qp'];
+                let f_idx = get_cur_frame_idx() % numFramePerFile;
+                let block = block_per_frame[f_idx][e.target.id];
+                document.getElementById('b-x').innerText = block[0];
+                document.getElementById('b-y').innerText = block[1];
+                document.getElementById('b-w').innerText = block[2];
+                document.getElementById('b-h').innerText = block[3];
+                document.getElementById('b-qp').innerText = parseInt(frame_map[f_idx]['qp']) + parseInt(frame_map[f_idx]['plane_delta_qp']) + block[4];
             });
             map.appendChild(area);
         }

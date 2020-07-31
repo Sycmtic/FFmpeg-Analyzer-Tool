@@ -26,7 +26,7 @@ def parse_frame_timestamp(packets):
 def get_packets_info(file_path):
     """
     Get packet data using ffprobe to calculate the bitrate
-    :param file_path input video file path
+    :param file_path: input video file path
     :return information of packet
     """
     if which('ffprobe') is None:
@@ -44,7 +44,7 @@ def get_packets_info(file_path):
 def get_stream_info(file_path):
     """
     Get video stream information using ffprobe
-    :param file_path input video file path
+    :param file_path: input video file path
     :return information of stream
     """
     if which('ffprobe') is None:
@@ -64,9 +64,9 @@ def get_stream_info(file_path):
 def generate_vis_video(file_path, folder_path, op):
     """
     Generate visualization video from ffmpeg codecview filter using subprocess
-    :param file_path input video file path
-    :param folder_path output folder path
-    :param op option of codecview filter (qp, mv, bs, b_type)
+    :param file_path: input video file path
+    :param folder_path: output folder path
+    :param op: option of codecview filter (qp, mv, bs, b_type)
     """
     if which('ffmpeg') is None:
         raise Exception('No ffmpeg found in path')
@@ -86,8 +86,8 @@ def generate_vis_video(file_path, folder_path, op):
 def get_qp_data(file_path):
     """
     Get basic qp data from ffmpeg using subprocess
-    :param file_path input video file path
-    :return directory key - pts, value - basic qp
+    :param file_path: input video file path
+    :return directory: key - pts, value - basic qp
     """
     if which('ffmpeg') is None:
         raise Exception('No ffmpeg found in path')
@@ -125,7 +125,7 @@ def get_side_data_metric(line, name):
 def get_frame_data(file_path):
     """
     Get frame data from ffprobe using subprocess and store in js file
-    :param file_path input video file path
+    :param file_path: input video file path
     """
     cmd = 'ffprobe -show_frames -of json'
     args = shlex.split(cmd)
@@ -147,9 +147,9 @@ def get_frame_data(file_path):
 def get_frame_side_data(file_path, data):
     """
     Get side data from ffmpeg using subprocess
-    :param file_path input video file path
-    :param data (dict) key - frame index, value: frame metrics object
-    :return data (dict) with frame side data key - frame index, value: frame metrics object
+    :param file_path: input video file path
+    :param data: (dict) key - frame index, value: frame metrics object
+    :return data: (dict) with frame side data key - frame index, value - frame metrics object
     """
     cmd = 'ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf showinfo -f null -'
     args = shlex.split(cmd)
@@ -165,6 +165,9 @@ def get_frame_side_data(file_path, data):
             f_idx = int(output[start:end])
         if output.find(side_data_str) != -1:
             data[f_idx][qp_str] = get_side_data_metric(output, qp_str)
+        data[f_idx][plane_delta_qp_str] = 0
+        if output.find(plane_delta_qp_index) != -1:
+            data[f_idx][plane_delta_qp_str] = get_side_data_metric(output, plane_delta_qp_index)
     return data
 
 
@@ -172,10 +175,10 @@ def parse_block_data(frames):
     """
     Parse block data from frame side data
     :param frames: frames data
-    :return: data (dict) key - frame index, value - list of block info
+    :return: data (array) index - frame index,
+                          content - list of block data [src_x,src_y,width,height,delta_qp]
     """
-    data = {}
-    f_idx = 0
+    data = []
     for frame in frames:
         if frame[media_type_str] != 'video':
             continue
@@ -185,36 +188,43 @@ def parse_block_data(frames):
                 side_data = sd
                 break
         if side_data is not None:
-            data[f_idx] = side_data[block_data_list_str]
-        f_idx += 1
+            blocks = []
+            for block_data in side_data[block_data_list_str]:
+                block = []
+                for val in block_data.values():
+                    block.append(val)
+                blocks.append(block)
+            data.append(blocks)
     return data
 
 
-def split_data(data):
+def split_data(data, frame_per_file):
     """
     Store the block data separately according to the frame index range
     :param data: block data per frame
+    :param frame_per_file: number of frame stores in a file
     """
-    block_per_frame = {}
+    block_per_frame = []
     count = 0
     if not os.path.exists(block_folder_path):
         os.mkdir(block_folder_path)
-    for key, value in data.items():
-        block_per_frame[key] = value
+    for blocks in data:
+        block_per_frame.append(blocks)
         count += 1
-        if count % 10 == 0:
-            file_name = 'block_' + str(count // 10 - 1) + '.js'
+        if count % frame_per_file == 0:
+            file_name = 'block_' + str(count // frame_per_file - 1) + '.js'
             write_to_js('block_per_frame', block_per_frame, block_folder_path + file_name, 'w')
-            block_per_frame = {}
+            block_per_frame = []
     if len(block_per_frame) > 0:
-        file_name = 'block_' + str(count // 10) + '.js'
+        file_name = 'block_' + str(count // frame_per_file) + '.js'
         write_to_js('block_per_frame', block_per_frame, block_folder_path + file_name, 'w')
 
 
-def get_block_data(file_path):
+def get_block_data(file_path, frame_per_file):
     """
     Get block data from ffprobe using subprocess and store in js file
     :param file_path: input video file path
+    :param frame_per_file: number of frame stores in a file
     """
     if which('ffprobe') is None:
         raise Exception('No ffprobe found in path')
@@ -225,4 +235,4 @@ def get_block_data(file_path):
     output = json.loads(output)[frames_str]
     data = parse_block_data(output)
     # output block data to js
-    split_data(data)
+    split_data(data, frame_per_file)

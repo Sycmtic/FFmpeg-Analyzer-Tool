@@ -9,6 +9,21 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=True)
 
 
+def change_js_file_setting(frame_per_file):
+    """
+    change number of frame stores in a file
+    :param frame_per_file: (number)
+    :return:
+    """
+    with open('./js/report.js', 'r') as f:
+        lines = f.readlines()
+    with open('./js/report.js', 'w') as f:
+        for line in lines:
+            if line.find('let numFramePerFile') != -1:
+                line = 'let numFramePerFile = {};\n'.format(frame_per_file)
+            f.write(line)
+
+
 def create_report_folder(folder_path):
     """
     create report folder struct
@@ -91,4 +106,3 @@ def write_to_js(name, data, file_path, mode):
     """
     with open(file_path, mode, encoding='utf-8') as f:
         f.write('var ' + name + ' = %s;' % json.dumps(data))
-    f.close()
