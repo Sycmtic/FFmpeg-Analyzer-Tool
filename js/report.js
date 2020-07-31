@@ -59,6 +59,7 @@ const add_button_bar_listener = () => {
             }
         }
         if (showBlockDetail) {
+            remove_block_overlay();
             create_block_overlay();
         }
     });
@@ -74,6 +75,7 @@ const add_button_bar_listener = () => {
             }
         }
         if (showBlockDetail) {
+            remove_block_overlay();
             create_block_overlay();
         }
     });
@@ -89,6 +91,8 @@ const add_button_bar_listener = () => {
         });
         if (showBlockDetail) {
             create_block_overlay();
+        } else {
+            remove_block_overlay();
         }
     });
 
@@ -184,6 +188,8 @@ const doc_keyUp = e => {
             break;
     }
 }
+// register the handler
+document.addEventListener('keyup', doc_keyUp, false);
 
 
 /**
@@ -192,6 +198,42 @@ const doc_keyUp = e => {
 const remove_block_overlay = () => {
     let map = document.getElementById('block-overlay-map');
     map.innerHTML = "";
+    // remove loading block data
+    let children = document.getElementsByTagName("head")[0].children;
+    for (let i = 0; i < children.length; i++) {
+        if (children[i].src && children[i].src.includes('/report/files/blocks')) {
+            children[i].remove();
+        }
+    }
+}
+
+
+/**
+ * Load javascript file
+ *
+ * @param url js file path
+ * @param callback function to be called when loading finished
+ */
+const load_script = (url, callback) => {
+    let script = document.createElement("script")
+    script.type = "text/javascript";
+
+    if (script.readyState){  //IE
+        script.onreadystatechange = function(){
+            if (script.readyState === "loaded" ||
+                    script.readyState === "complete"){
+                script.onreadystatechange = null;
+                callback();
+            }
+        };
+    } else {  //Others
+        script.onload = function(){
+            callback();
+        };
+    }
+
+    script.src = url;
+    document.getElementsByTagName("head")[0].appendChild(script);
 }
 
 
@@ -199,53 +241,50 @@ const remove_block_overlay = () => {
  * Create block overlay for current frame
  */
 const create_block_overlay = () => {
-    remove_block_overlay();
     let f_idx = get_cur_frame_idx();
-    let blocks = block_per_frame[f_idx];
-    let map = document.getElementById('block-overlay-map');
-    let w_ratio = 1280 / frame_map[0]['width'];
-    let h_ratio = 720 / frame_map[0]['height'];
-    for (let i = 0; i < blocks.length; i++) {
-        let block = blocks[i];
-        let x1 = parseInt(block["src_x"]) * w_ratio;
-        let y1 = parseInt(block["src_y"]) * h_ratio;
-        let x2 = x1 + parseInt(block["width"]) * w_ratio;
-        let y2 = y1 + parseInt(block["height"]) * h_ratio;
-        let area = document.createElement('area');
-        area.href = "#";
-        area.id = i;
-        area.shape = "rect";
-        area.coords = x1 + "," + y1 + "," + x2 + "," + y2;
-        area.addEventListener("click", (e) => {
-            console.log(e.target)
-            let block = block_per_frame[get_cur_frame_idx()][e.target.id];
-            document.getElementById('b-x').innerText = block['src_x'];
-            document.getElementById('b-y').innerText = block['src_y'];
-            document.getElementById('b-w').innerText = block['width'];
-            document.getElementById('b-h').innerText = block['height'];
-            document.getElementById('b-qp').innerText = block['delta_qp'];
-        });
-        map.appendChild(area);
-    }
+    let file_idx = Math.floor(f_idx / 10);
+    let file_name = "block_" + file_idx + ".js";
+    load_script("./files/blocks/" + file_name, () => {
+        let blocks = block_per_frame[f_idx];
+        let map = document.getElementById('block-overlay-map');
+        let w_ratio = 1280 / frame_map[0]['width'];
+        let h_ratio = 720 / frame_map[0]['height'];
+        for (let i = 0; i < blocks.length; i++) {
+            let block = blocks[i];
+            let x1 = parseInt(block["src_x"]) * w_ratio;
+            let y1 = parseInt(block["src_y"]) * h_ratio;
+            let x2 = x1 + parseInt(block["width"]) * w_ratio;
+            let y2 = y1 + parseInt(block["height"]) * h_ratio;
+            let area = document.createElement('area');
+            area.href = "#";
+            area.id = i;
+            area.shape = "rect";
+            area.coords = x1 + "," + y1 + "," + x2 + "," + y2;
+            area.addEventListener("click", (e) => {
+                let block = block_per_frame[get_cur_frame_idx()][e.target.id];
+                document.getElementById('b-x').innerText = block['src_x'];
+                document.getElementById('b-y').innerText = block['src_y'];
+                document.getElementById('b-w').innerText = block['width'];
+                document.getElementById('b-h').innerText = block['height'];
+                document.getElementById('b-qp').innerText = block['delta_qp'];
+            });
+            map.appendChild(area);
+        }
+        let basic_opts = {
+            mapKey: 'id',
+            singleSelect: true
+        };
+        let initial_opts = $.extend({},basic_opts,
+            {
+                staticState: true,
+                fill: false,
+                stroke: true,
+                strokeWidth: 0.5,
+                strokeColor: 'ff0000'
+            });
 
-    let basic_opts = {
-        mapKey: 'id',
-        singleSelect: true
-    };
-    let initial_opts = $.extend({},basic_opts,
-        {
-            staticState: true,
-            fill: false,
-            stroke: true,
-            strokeWidth: 0.5,
-            strokeColor: 'ff0000'
-        });
-
-    $('#overlay-img').mapster(initial_opts)
-        .mapster('snapshot')
-        .mapster('rebind',basic_opts);
+        $('#overlay-img').mapster(initial_opts)
+            .mapster('snapshot')
+            .mapster('rebind',basic_opts);
+    });
 }
-
-
-// register the handler
-document.addEventListener('keyup', doc_keyUp, false);

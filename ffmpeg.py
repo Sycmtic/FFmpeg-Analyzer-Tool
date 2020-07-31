@@ -1,3 +1,4 @@
+import os
 import shlex
 import subprocess
 import json
@@ -123,9 +124,8 @@ def get_side_data_metric(line, name):
 
 def get_frame_data(file_path):
     """
-    Get frame data from ffprobe using subprocess
+    Get frame data from ffprobe using subprocess and store in js file
     :param file_path input video file path
-    :return directory key - frame index, value: frame metrics
     """
     cmd = 'ffprobe -show_frames -of json'
     args = shlex.split(cmd)
@@ -140,7 +140,8 @@ def get_frame_data(file_path):
             data[f_idx] = frame
             f_idx += 1
     get_frame_side_data(file_path, data)
-    return data
+    # output frame data to js
+    write_to_js('frame_map', data, data_js_path, 'w')
 
 
 def get_frame_side_data(file_path, data):
@@ -189,11 +190,31 @@ def parse_block_data(frames):
     return data
 
 
+def split_data(data):
+    """
+    Store the block data separately according to the frame index range
+    :param data: block data per frame
+    """
+    block_per_frame = {}
+    count = 0
+    if not os.path.exists(block_folder_path):
+        os.mkdir(block_folder_path)
+    for key, value in data.items():
+        block_per_frame[key] = value
+        count += 1
+        if count % 10 == 0:
+            file_name = 'block_' + str(count // 10 - 1) + '.js'
+            write_to_js('block_per_frame', block_per_frame, block_folder_path + file_name, 'w')
+            block_per_frame = {}
+    if len(block_per_frame) > 0:
+        file_name = 'block_' + str(count // 10) + '.js'
+        write_to_js('block_per_frame', block_per_frame, block_folder_path + file_name, 'w')
+
+
 def get_block_data(file_path):
     """
-    Get block data from ffprobe using subprocess
+    Get block data from ffprobe using subprocess and store in js file
     :param file_path: input video file path
-    :return:
     """
     if which('ffprobe') is None:
         raise Exception('No ffprobe found in path')
@@ -202,5 +223,6 @@ def get_block_data(file_path):
     args.append(file_path)
     output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
     output = json.loads(output)[frames_str]
+    data = parse_block_data(output)
     # output block data to js
-    write_to_js('block_per_frame', parse_block_data(output), data_js_path, 'a')
+    split_data(data)

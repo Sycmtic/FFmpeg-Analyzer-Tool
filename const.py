@@ -25,6 +25,7 @@ audio_img_url_str = 'audio_img_url'
 overlay_img_url_str = 'overlay_img_url'
 file_name_str = 'file_name'
 data_js_path = './js/data.js'
+block_folder_path = './js/blocks/'
 combined_graph_opacity = 0.7
 
 # ffmpeg attributes

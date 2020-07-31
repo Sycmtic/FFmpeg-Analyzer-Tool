@@ -3,24 +3,32 @@ import jinja2
 import json
 
 from const import *
-from shutil import copyfile
+from shutil import copy, copyfile, rmtree
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=True)
 
 
+def create_report_folder(folder_path):
+    """
+    create report folder struct
+    :param folder_path: output report folder path
+    """
+    if not os.path.exists(folder_path + '/report'):
+        os.mkdir(folder_path + '/report')
+        os.mkdir(folder_path + '/report/files')
+        os.mkdir(folder_path + '/report/files/blocks')
+
+
 def write_to_report_folder(file_name, folder_path, stream_info, bitrate_div, qp_div, c_plot):
     """
-    generate report folder
+    write to report folder
     :param file_name: name of input video
     :param folder_path: output report folder path
     :param stream_info: stream info dict
     :param bitrate_div: bitrate graph div
     :param qp_div: qp graph div
     """
-    if not os.path.exists(folder_path + '/report'):
-        os.mkdir(folder_path + '/report')
-        os.mkdir(folder_path + '/report/files')
     write_to_files(folder_path + '/report/files')
     write_to_html(file_name, folder_path, stream_info, bitrate_div, qp_div, c_plot)
 
@@ -35,8 +43,14 @@ def write_to_files(folder_path):
     copyfile('./audio-icon.jpg', folder_path + '/audio-icon.jpg')
     copyfile('./overlay.png', folder_path + '/overlay.png')
     copyfile('./js/report.js', folder_path + '/report.js')
-    copyfile('./js/data.js', folder_path + '/data.js')
     copyfile('./js/imagemapster.js', folder_path + '/imagemapster.js')
+    copyfile('./js/data.js', folder_path + '/data.js')
+    os.remove('./js/data.js')
+    for file in os.listdir('./js/blocks'):
+        file_path = os.path.join('./js/blocks', file)
+        if os.path.isfile(file_path):
+            copy(file_path, folder_path + '/blocks')
+    rmtree('./js/blocks')
 
 
 def write_to_html(file_name, folder_path, stream_info, bitrate_div, qp_div, c_plot):
