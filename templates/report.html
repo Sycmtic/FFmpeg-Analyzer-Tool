@@ -112,9 +112,9 @@
                           {% endif %}
                         </div>
                         <div class="col">
-                            <h4><b>Sample Format</b></h4>
-                          {% if audio.sample_fmt|length %}
-                            <p>{{ audio.sample_fmt }}</p>
+                            <h4><b>Channel Layout</b></h4>
+                          {% if audio.channel_layout|length %}
+                            <p>{{ audio.channel_layout }}</p>
                           {% else %}
                             <p>N/A</p>
                           {% endif %}
@@ -132,11 +132,154 @@
             </div>
             {% endfor %}
         </div>
+
         <h1>Bitrate per Frame</h1>
             {{bitrate_div | safe}}
         <h1>Quantization Parameters per Frame</h1>
             {{qp_div | safe}}
         <h1>QP / Bitrate per Frame</h1>
             {{c_plot | safe}}
+
+        <!-- Video Container -->
+        <div class="container">
+            <!-- vis video select -->
+            <div class="row" id="video-selector-container">
+                <div class="col-3">
+                    <label for="video-selector">Video Type:</label>
+                    <select id="video-selector" class="custom-select">
+                        <option value="qp" selected>QP Visualization</option>
+                        <option value="mv">Motion Vector Visualization</option>
+                        <option value="bs">Block Structure Visualization</option>
+                        <option value="mb-type">Block Type Visualization</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- qp vis video -->
+            <div id="qp-video-container">
+                <div class="row">
+                    <video class="vis-video center" id="qp-video" width="1280" height="720" controls>
+                        <source src="./qp_vis.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <!-- mv vis video -->
+            <div id="mv-video-container">
+                <div class="row">
+                    <video class="vis-video center" id="mv-video" width="1280" height="720" controls>
+                        <source src="./mv_vis.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <!-- block structure vis video -->
+            <div id="bs-video-container">
+                <div class="row">
+                    <video class="vis-video center" id="bs-video" width="1280" height="720" controls>
+                        <source src="./bs_vis.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <!-- block type vis video -->
+            <div id="mb-type-video-container">
+                <div class="row">
+                    <video class="vis-video center" id="mb-type-video" width="1280" height="720" controls>
+                        <source src="./mb_type_vis.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+
+            <!-- button bar -->
+            <div class="row">
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-primary" id="frame-detail-btn">
+                        Frame Detail
+                    </button>
+                </div>
+                <div class="center col-6">
+                    <button type="button" class="btn btn-outline-primary" id="pre-frame-btn">
+                        prev
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="nxt-frame-btn">
+                        next
+                    </button>
+                </div>
+            </div>
+
+            <!-- frame detail page -->
+            <div id="frame-detail-container">
+                <div class="row">
+                    <div class="col">
+                        <h4><b>PTS Time</b></h4>
+                        <p id="fd-pts-time">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>PTS</b></h4>
+                        <p id="fd-pts">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>DTS</b></h4>
+                        <p id="fd-dts">N/A</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h4><b>Type</b></h4>
+                        <p id="fd-type">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Key Frame</b></h4>
+                        <p id="fd-key">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Quantization Parameter</b></h4>
+                        <p id="fd-qp">N/A</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h4><b>Position</b></h4>
+                        <p id="fd-pos">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Size</b></h4>
+                        <p id="fd-size">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Interlaced</b></h4>
+                        <p id="fd-interlaced">N/A</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h4><b>Top field first</b></h4>
+                        <p id="fd-top-field-first">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Repeat Picture</b></h4>
+                        <p id="fd-repeat-pict">N/A</p>
+                    </div>
+                    <div class="col">
+                        <h4><b>Chroma Location</b></h4>
+                        <p id="fd-chroma-location">N/A</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <h4><b>Coded Picture Number</b></h4>
+                        <p id="fd-coded-pict-num">N/A</p>
+                    </div>
+                    <div class="col-4">
+                        <h4><b>Display Picture Number</b></h4>
+                        <p id="fd-dis-pict-num">N/A</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
+    <script type="text/javascript" src={{data_js_url}}></script>
+    <script type="text/javascript" src={{js_url}}></script>
 </html>

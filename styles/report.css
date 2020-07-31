@@ -38,3 +38,33 @@ h1 {
     margin-left: 15%;
     width: 80%
 }
+
+.center {
+    margin: 0 auto;
+}
+
+.btn {
+    margin: 10px 10px;
+}
+
+#mv-video-container {
+    display: none;
+}
+
+#bs-video-container {
+    display: none;
+}
+
+#mb-type-video-container {
+    display: none;
+}
+
+#frame-detail-container {
+    display: none;
+}
+
+#video-selector-container {
+    margin: 50px 0 10px 0;
+    padding: 0;
+    text-align: left;
+}
