@@ -8,21 +8,6 @@ from output import write_to_js
 from shutil import which
 
 
-def parse_frame_timestamp(packets):
-    """
-    Extract frame timestamp from packet data
-    :param packets: packet data
-    :return: frame timestamp
-    """
-    data = []
-    pre_pts_time = -1
-    for packet in packets:
-        if packet[codec_type_str] == 'video' and float(packet[pts_time_str]) > pre_pts_time:
-            data.append(packet[pts_time_str])
-            pre_pts_time = float(packet[pts_time_str])
-    return data
-
-
 def get_packets_info(file_path):
     """
     Get packet data using ffprobe to calculate the bitrate
@@ -36,8 +21,6 @@ def get_packets_info(file_path):
     args.append(file_path)
     output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
     output = json.loads(output)[packets_str]
-    # output frame timestamps to js
-    write_to_js('frame_ts', parse_frame_timestamp(output), data_js_path, 'a')
     return output
 
 
@@ -71,9 +54,9 @@ def generate_vis_video(file_path, folder_path, op):
     if which('ffmpeg') is None:
         raise Exception('No ffmpeg found in path')
     if op == mv_str:
-        cmd = '../FFmpeg/ffmpeg -flags2 +export_mvs -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
+        cmd = 'ffmpeg -flags2 +export_mvs -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
     else:
-        cmd = '../FFmpeg/ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
+        cmd = 'ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
     args = shlex.split(cmd)
     args.append(folder_path + '/report/' + op + '_vis.mp4')
     proc = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -133,15 +116,19 @@ def get_frame_data(file_path):
     output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
     output = json.loads(output)
     frames = output[frames_str]
+    frame_ts = []
     data = {}
     f_idx = 0
     for frame in frames:
         if frame[media_type_str] == 'video':
             data[f_idx] = frame
+            frame_ts.append(frame[pkt_pts_time_str])
             f_idx += 1
     get_frame_side_data(file_path, data)
     # output frame data to js
     write_to_js('frame_map', data, data_js_path, 'w')
+    # output frame timestamps to js
+    write_to_js('frame_ts', frame_ts, data_js_path, 'a')
 
 
 def get_frame_side_data(file_path, data):
@@ -228,7 +215,7 @@ def get_block_data(file_path, frame_per_file):
     """
     if which('ffprobe') is None:
         raise Exception('No ffprobe found in path')
-    cmd = '../FFmpeg/ffprobe -export_side_data +venc_params -show_frames -of json'
+    cmd = 'ffprobe -export_side_data +venc_params -show_frames -of json'
     args = shlex.split(cmd)
     args.append(file_path)
     output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
