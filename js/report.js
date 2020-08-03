@@ -29,6 +29,10 @@ const add_video_event_listener = () => {
             videoCurrentTime = video.currentTime;
             update_current_time();
             update_frame_detail_page();
+            if (showBlockDetail) {
+                remove_block_overlay();
+                create_block_overlay();
+            }
         });
     });
 }
@@ -51,33 +55,25 @@ const update_current_time = () => {
 const add_button_bar_listener = () => {
     document.getElementById("nxt-frame-btn").addEventListener("click", () => {
         let currentTime = videoCurrentTime;
-        let offset = 0.00001;
-        console.log("current time: " + currentTime);
+        let offset = 0.001;
         for (let i = 0; i < frame_ts.length; i++) {
             if (frame_ts[i] > currentTime) {
                 videos[0].currentTime = Number(frame_ts[i]) + offset;
+                console.log("current time: " + videos[0].currentTime);
                 break;
             }
-        }
-        if (showBlockDetail) {
-            remove_block_overlay();
-            create_block_overlay();
         }
     });
 
     document.getElementById("pre-frame-btn").addEventListener("click", () => {
         let currentTime = videoCurrentTime;
-        let offset = -0.00001;
-        console.log("current time: " + currentTime);
-        for (let i = frame_ts.length - 1; i >= 0; i--) {
+        let offset = 0.001;
+        for (let i = frame_ts.length - 1; i >= 1; i--) {
             if (frame_ts[i] < currentTime) {
-                videos[0].currentTime = Number(frame_ts[i]) + offset;
+                videos[0].currentTime = Number(frame_ts[i - 1]) + offset;
+                console.log("current time: " + videos[0].currentTime);
                 break;
             }
-        }
-        if (showBlockDetail) {
-            remove_block_overlay();
-            create_block_overlay();
         }
     });
 
