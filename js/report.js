@@ -265,6 +265,8 @@ const create_block_overlay = () => {
                 document.getElementById('b-w').innerText = block[2];
                 document.getElementById('b-h').innerText = block[3];
                 document.getElementById('b-qp').innerText = parseInt(frame_map[f_idx]['qp']) + parseInt(frame_map[f_idx]['plane_delta_qp']) + block[4];
+                document.getElementById('b-intra').innerText = block[5] === 0 ? "False" : "True";
+                document.getElementById('b-skip').innerText = block[6] === 0 ? "False" : "True";
             });
             map.appendChild(area);
         }
