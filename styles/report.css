@@ -39,6 +39,10 @@ h1 {
     width: 80%
 }
 
+.vis-video {
+    position: absolute;
+}
+
 .center {
     margin: 0 auto;
 }
@@ -56,6 +60,18 @@ h1 {
 }
 
 #mb-type-video-container {
+    display: none;
+}
+
+#block-detail-container {
+    display: block;
+}
+
+#overlay-container {
+    display: none;
+}
+
+#block-detail-container {
     display: none;
 }
 

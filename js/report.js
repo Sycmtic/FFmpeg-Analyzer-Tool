@@ -1,8 +1,13 @@
+let numFramePerFile = 10;
 let videoSelected = "qp";
 let videoCurrentTime = 0;
 let videos = document.getElementsByClassName("vis-video");
+let showBlockDetail = false;
 
 
+/**
+ * Add event listener to videos
+ */
 const add_video_event_listener = () => {
     Array.from(videos).forEach((video) => {
         video.addEventListener("play", () => {
@@ -24,12 +29,19 @@ const add_video_event_listener = () => {
             videoCurrentTime = video.currentTime;
             update_current_time();
             update_frame_detail_page();
+            if (showBlockDetail) {
+                remove_block_overlay();
+                create_block_overlay();
+            }
         });
     });
 }
 add_video_event_listener();
 
 
+/**
+ * Sync the current time of all visualization videos
+ */
 const update_current_time = () => {
     Array.from(videos).forEach((video) => {
         video.currentTime = videoCurrentTime;
@@ -37,32 +49,64 @@ const update_current_time = () => {
 }
 
 
-document.getElementById("nxt-frame-btn").addEventListener("click", () => {
-    let currentTime = videoCurrentTime;
-    let offset = 0.00001;
-    console.log("current time: " + currentTime);
-    for (let i = 0; i < frame_ts.length; i++) {
-        if (frame_ts[i] > currentTime) {
-            videos[0].currentTime = Number(frame_ts[i]) + offset;
-            break;
+/**
+ * Add event listener to button bar
+ */
+const add_button_bar_listener = () => {
+    document.getElementById("nxt-frame-btn").addEventListener("click", () => {
+        let currentTime = videoCurrentTime;
+        let offset = 0.001;
+        for (let i = 0; i < frame_ts.length; i++) {
+            if (frame_ts[i] > currentTime) {
+                videos[0].currentTime = Number(frame_ts[i]) + offset;
+                console.log("current time: " + videos[0].currentTime);
+                break;
+            }
         }
-    }
-});
+    });
 
-
-document.getElementById("pre-frame-btn").addEventListener("click", () => {
-    let currentTime = videoCurrentTime;
-    let offset = -0.00001;
-    console.log("current time: " + currentTime);
-    for (let i = frame_ts.length - 1; i >= 0; i--) {
-        if (frame_ts[i] < currentTime) {
-            videos[0].currentTime = Number(frame_ts[i]) + offset;
-            break;
+    document.getElementById("pre-frame-btn").addEventListener("click", () => {
+        let currentTime = videoCurrentTime;
+        let offset = 0.001;
+        for (let i = frame_ts.length - 1; i >= 1; i--) {
+            if (frame_ts[i] < currentTime) {
+                videos[0].currentTime = Number(frame_ts[i - 1]) + offset;
+                console.log("current time: " + videos[0].currentTime);
+                break;
+            }
         }
-    }
-});
+    });
+
+    document.getElementById("block-detail-btn").addEventListener("click", () => {
+        let blockDetailContainer = document.getElementById("block-detail-container");
+        let overlayContainer = document.getElementById("overlay-container");
+        showBlockDetail = !showBlockDetail;
+        blockDetailContainer.style.display = showBlockDetail ? "block" : "none";
+        overlayContainer.style.display = showBlockDetail ? "block" : "none";
+        Array.from(videos).forEach((video) => {
+            video.controls = !showBlockDetail;
+        });
+        if (showBlockDetail) {
+            create_block_overlay();
+        } else {
+            remove_block_overlay();
+        }
+    });
+
+    document.getElementById("frame-detail-btn").addEventListener("click", () => {
+        let frameDetailContainer = document.getElementById("frame-detail-container");
+        let dis = frameDetailContainer.style.display;
+        frameDetailContainer.style.display = (!dis || dis === "none") ? "block" : "none";
+    });
+}
+add_button_bar_listener();
 
 
+/**
+ * Get the index of current paused frame
+ *
+ * @return {number} frame index
+ */
 const get_cur_frame_idx = () => {
     for (let i = 0; i < frame_ts.length; i++) {
         if (frame_ts[i] > videoCurrentTime) {
@@ -73,6 +117,9 @@ const get_cur_frame_idx = () => {
 }
 
 
+/**
+ * Update the frame detail plane to current frame
+ */
 update_frame_detail_page = () => {
     let frame_idx = get_cur_frame_idx();
     document.getElementById("fd-pts-time").innerText = frame_map[frame_idx].pkt_pts_time;
@@ -92,13 +139,10 @@ update_frame_detail_page = () => {
 }
 
 
-document.getElementById("frame-detail-btn").addEventListener("click", () => {
-    let frameDetailContainer = document.getElementById("frame-detail-container");
-    let dis = frameDetailContainer.style.display;
-    frameDetailContainer.style.display = (!dis || dis === "none") ? "block" : "none";
-});
-
-
+/**
+ * Add event listener to video type selection
+ * @type {HTMLElement}
+ */
 let videoSelector = document.getElementById("video-selector")
 videoSelector.addEventListener("change", () => {
     let qpVideoContainer = document.getElementById("qp-video-container");
@@ -141,6 +185,106 @@ const doc_keyUp = e => {
             break;
     }
 }
-
 // register the handler
 document.addEventListener('keyup', doc_keyUp, false);
+
+
+/**
+ * Remove block overlay
+ */
+const remove_block_overlay = () => {
+    let map = document.getElementById('block-overlay-map');
+    map.innerHTML = "";
+    // remove loading block data
+    let children = document.getElementsByTagName("head")[0].children;
+    for (let i = 0; i < children.length; i++) {
+        if (children[i].src && children[i].src.includes('/report/files/blocks')) {
+            children[i].remove();
+        }
+    }
+}
+
+
+/**
+ * Load javascript file
+ *
+ * @param url js file path
+ * @param callback function to be called when loading finished
+ */
+const load_script = (url, callback) => {
+    let script = document.createElement("script")
+    script.type = "text/javascript";
+
+    if (script.readyState){  //IE
+        script.onreadystatechange = function(){
+            if (script.readyState === "loaded" ||
+                    script.readyState === "complete"){
+                script.onreadystatechange = null;
+                callback();
+            }
+        };
+    } else {  //Others
+        script.onload = function(){
+            callback();
+        };
+    }
+
+    script.src = url;
+    document.getElementsByTagName("head")[0].appendChild(script);
+}
+
+
+/**
+ * Create block overlay for current frame
+ */
+const create_block_overlay = () => {
+    let f_idx = get_cur_frame_idx();
+    let file_idx = Math.floor(f_idx / numFramePerFile);
+    let file_name = "block_" + file_idx + ".js";
+    load_script("./files/blocks/" + file_name, () => {
+        let blocks = block_per_frame[f_idx % numFramePerFile];
+        let map = document.getElementById('block-overlay-map');
+        let w_ratio = 1280 / frame_map[0]['width'];
+        let h_ratio = 720 / frame_map[0]['height'];
+        for (let i = 0; i < blocks.length; i++) {
+            let block = blocks[i];
+            let x1 = parseInt(block[0]) * w_ratio;
+            let y1 = parseInt(block[1]) * h_ratio;
+            let x2 = x1 + parseInt(block[2]) * w_ratio;
+            let y2 = y1 + parseInt(block[3]) * h_ratio;
+            let area = document.createElement('area');
+            area.href = "#";
+            area.id = i;
+            area.shape = "rect";
+            area.coords = x1 + "," + y1 + "," + x2 + "," + y2;
+            area.addEventListener("click", (e) => {
+                let f_idx = get_cur_frame_idx() % numFramePerFile;
+                let block = block_per_frame[f_idx][e.target.id];
+                document.getElementById('b-x').innerText = block[0];
+                document.getElementById('b-y').innerText = block[1];
+                document.getElementById('b-w').innerText = block[2];
+                document.getElementById('b-h').innerText = block[3];
+                document.getElementById('b-qp').innerText = parseInt(frame_map[f_idx]['qp']) + parseInt(frame_map[f_idx]['plane_delta_qp']) + block[4];
+                document.getElementById('b-intra').innerText = block[5] === 0 ? "False" : "True";
+                document.getElementById('b-skip').innerText = block[6] === 0 ? "False" : "True";
+            });
+            map.appendChild(area);
+        }
+        let basic_opts = {
+            mapKey: 'id',
+            singleSelect: true
+        };
+        let initial_opts = $.extend({},basic_opts,
+            {
+                staticState: true,
+                fill: false,
+                stroke: true,
+                strokeWidth: 0.5,
+                strokeColor: 'ff0000'
+            });
+
+        $('#overlay-img').mapster(initial_opts)
+            .mapster('snapshot')
+            .mapster('rebind',basic_opts);
+    });
+}
