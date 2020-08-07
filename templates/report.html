@@ -147,6 +147,10 @@
             {{qp_div | safe}}
         <h1>QP / Bitrate per Frame</h1>
             {{c_plot | safe}}
+        {% if ssim_div is not none %}
+        <h1>SSIM per Frame</h1>
+            {{ssim_div | safe}}
+        {% endif %}
 
         <!-- Video Container -->
         <div class="container">
