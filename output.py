@@ -99,9 +99,15 @@ def write_to_html(file_name, main_file_name, folder_path, stream_info, bitrate_d
     stream_info[video_img_url_str] = video_img_url
     stream_info[overlay_img_url_str] = overlay_img_url
     stream_info[file_name_str] = file_name
+    file_path = None
+    if file_name is not None:
+        file_path = './' + file_name
+    main_file_path = None
+    if main_file_name is not None:
+        main_file_path = './' + main_file_name
     html_string = report.render(css_url=css_url, js_url=js_url, mapster_url=mapster_url, data_js_url=data_url,
                                 stream_info=stream_info, bitrate_div=bitrate_div, qp_div=qp_div, c_plot=c_plot,
-                                ssim_div=ssim_div, file_name='./' + file_name, main_file_name='./' + main_file_name)
+                                ssim_div=ssim_div, file_path=file_path, main_file_path=main_file_path)
     f = open(folder_path + report_file_path, 'w')
     f.write(html_string)
     f.close()

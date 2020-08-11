@@ -51,7 +51,7 @@ def compute_ssim(frame_ssim):
     """
     Parse SSIM data to an appropriate format
     :param frame_ssim: SSIM per frame dict
-    :return:
+    :return: data (dict)
     """
     data = {x_str: [], y_str: []}
     for f_idx, ssim in frame_ssim.items():
