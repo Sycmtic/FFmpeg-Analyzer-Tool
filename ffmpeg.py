@@ -54,9 +54,9 @@ def generate_vis_video(file_path, folder_path, op):
     if which('ffmpeg') is None:
         raise Exception('No ffmpeg found in path')
     if op == mv_str:
-        cmd = '../FFmpeg/ffmpeg -flags2 +export_mvs -export_side_data +venc_params -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
+        cmd = 'ffmpeg -flags2 +export_mvs -export_side_data +venc_params -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
     else:
-        cmd = '../FFmpeg/ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
+        cmd = 'ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
     args = shlex.split(cmd)
     args.append(folder_path + '/report/' + op + '_vis.mp4')
     proc = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -216,7 +216,7 @@ def get_block_data(file_path, frame_per_file):
     """
     if which('ffprobe') is None:
         raise Exception('No ffprobe found in path')
-    cmd = '../FFmpeg/ffprobe -export_side_data +venc_params -show_frames -of json'
+    cmd = 'ffprobe -export_side_data +venc_params -show_frames -of json'
     args = shlex.split(cmd)
     args.append(file_path)
     output = subprocess.check_output(args, stderr=subprocess.DEVNULL)
