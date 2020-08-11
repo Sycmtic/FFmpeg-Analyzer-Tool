@@ -35,17 +35,26 @@ def create_report_folder(folder_path):
         os.mkdir(folder_path + '/report/files/blocks')
 
 
-def write_to_report_folder(file_name, folder_path, stream_info, bitrate_div, qp_div, c_plot, ssim_div):
+def write_to_report_folder(file_name, file_path, main_file_path, folder_path, stream_info, bitrate_div, qp_div, c_plot, ssim_div):
     """
     write to report folder
     :param file_name: name of input video
+    :param file_path: path of input video
+    :param main_file_path: main source video path
     :param folder_path: output report folder path
     :param stream_info: stream info dict
     :param bitrate_div: bitrate graph div
     :param qp_div: qp graph div
+    :param c_plot: qp / bitrate graph
+    :param ssim_div: ssim graph
     """
+    main_file_name = None
+    if main_file_path is not None:
+        main_file_name = main_file_path[main_file_path.rfind('/') + 1:]
+        copyfile(file_path, folder_path + '/report/' + file_name)
+        copyfile(main_file_path, folder_path + '/report/' + main_file_name)
     write_to_files(folder_path + '/report/files')
-    write_to_html(file_name, folder_path, stream_info, bitrate_div, qp_div, c_plot, ssim_div)
+    write_to_html(file_name, main_file_name, folder_path, stream_info, bitrate_div, qp_div, c_plot, ssim_div)
 
 
 def write_to_files(folder_path):
@@ -68,10 +77,11 @@ def write_to_files(folder_path):
     rmtree('./js/blocks')
 
 
-def write_to_html(file_name, folder_path, stream_info, bitrate_div, qp_div, c_plot, ssim_div):
+def write_to_html(file_name, main_file_name, folder_path, stream_info, bitrate_div, qp_div, c_plot, ssim_div):
     """
     write the information to HTML report
     :param file_name: name of input video
+    :param main_file_name: name of main source video
     :param folder_path: output report folder path
     :param stream_info: video stream info dict
     :param bitrate_div: bitrate graph div
@@ -90,7 +100,8 @@ def write_to_html(file_name, folder_path, stream_info, bitrate_div, qp_div, c_pl
     stream_info[overlay_img_url_str] = overlay_img_url
     stream_info[file_name_str] = file_name
     html_string = report.render(css_url=css_url, js_url=js_url, mapster_url=mapster_url, data_js_url=data_url,
-                                stream_info=stream_info, bitrate_div=bitrate_div, qp_div=qp_div, c_plot=c_plot, ssim_div=ssim_div)
+                                stream_info=stream_info, bitrate_div=bitrate_div, qp_div=qp_div, c_plot=c_plot,
+                                ssim_div=ssim_div, file_name='./' + file_name, main_file_name='./' + main_file_name)
     f = open(folder_path + report_file_path, 'w')
     f.write(html_string)
     f.close()

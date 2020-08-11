@@ -240,7 +240,7 @@ def parse_ssim_data(line):
     return f_idx, ssim_y, ssim_u, ssim_v, ssim_all
 
 
-def get_ssim_psnr_data(main_file_path, ref_file_path):
+def get_ssim_data(main_file_path, ref_file_path):
     """
     Get SSIM per frame using ffmpeg
     :param main_file_path: main video file path
@@ -252,9 +252,9 @@ def get_ssim_psnr_data(main_file_path, ref_file_path):
     cmd = 'ffmpeg -i ' + main_file_path + ' -i ' + ref_file_path + ' -lavfi "ssim=stats_file=./stats.log" -f null -'
     args = shlex.split(cmd)
     proc = subprocess.Popen(args, stderr=subprocess.PIPE)
-    stdout, stderr = proc.communicate()
+    proc.communicate()
     if proc.returncode != 0:
-        print(stderr)
+        raise Exception("SSIM Fail. Please make sure both video inputs have same resolution, pixel format and number of frames")
     data = {}
     with open('./stats.log', 'r') as file:
         for line in file:

@@ -1,5 +1,5 @@
 from const import size_str, dts_time_str, duration_time_str, x_str, y_str, ssim_all_str
-from ffmpeg import get_packets_info, get_qp_data, get_ssim_psnr_data
+from ffmpeg import get_packets_info, get_qp_data, get_ssim_data
 from graph import generate_line_graph
 
 
@@ -26,7 +26,7 @@ def generate_ssim_graph(main_file_path, ref_file_path):
     :param ref_file_path: ref video file path
     :return: <div> ssim graph
     """
-    ssim_data = get_ssim_psnr_data(main_file_path, ref_file_path)
+    ssim_data = get_ssim_data(main_file_path, ref_file_path)
     ssim_graph = generate_line_graph(compute_ssim(ssim_data))
     return ssim_graph
 

@@ -105,11 +105,23 @@ add_button_bar_listener();
 /**
  * Get the index of current paused frame
  *
+ * @param {string} type of video (vis or ssim)
  * @return {number} frame index
  */
-const get_cur_frame_idx = () => {
+const get_cur_frame_idx = (type) => {
+    let currentTime;
+    switch (type) {
+        case 'vis':
+            currentTime = videoCurrentTime;
+            break;
+        case 'ssim':
+            currentTime = ssimVideoCurrentTime;
+            break;
+        default:
+            return -1;
+    }
     for (let i = 0; i < frame_ts.length; i++) {
-        if (frame_ts[i] > videoCurrentTime) {
+        if (frame_ts[i] > currentTime) {
             return i - 1;
         }
     }
@@ -121,7 +133,7 @@ const get_cur_frame_idx = () => {
  * Update the frame detail plane to current frame
  */
 update_frame_detail_page = () => {
-    let frame_idx = get_cur_frame_idx();
+    let frame_idx = get_cur_frame_idx("vis");
     document.getElementById("fd-pts-time").innerText = frame_map[frame_idx].pkt_pts_time;
     document.getElementById("fd-pts").innerText = frame_map[frame_idx].pkt_pts;
     document.getElementById("fd-dts").innerText = frame_map[frame_idx].pkt_dts;
@@ -238,7 +250,7 @@ const load_script = (url, callback) => {
  * Create block overlay for current frame
  */
 const create_block_overlay = () => {
-    let f_idx = get_cur_frame_idx();
+    let f_idx = get_cur_frame_idx("vis");
     let file_idx = Math.floor(f_idx / numFramePerFile);
     let file_name = "block_" + file_idx + ".js";
     load_script("./files/blocks/" + file_name, () => {
@@ -258,7 +270,7 @@ const create_block_overlay = () => {
             area.shape = "rect";
             area.coords = x1 + "," + y1 + "," + x2 + "," + y2;
             area.addEventListener("click", (e) => {
-                let f_idx = get_cur_frame_idx() % numFramePerFile;
+                let f_idx = get_cur_frame_idx("vis") % numFramePerFile;
                 let block = block_per_frame[f_idx][e.target.id];
                 document.getElementById('b-x').innerText = block[0];
                 document.getElementById('b-y').innerText = block[1];
@@ -287,4 +299,117 @@ const create_block_overlay = () => {
             .mapster('snapshot')
             .mapster('rebind',basic_opts);
     });
+}
+
+
+let bar = $("#bar");
+let left = $("#left");
+let right = $("#right");
+let rightContent = $("#right-content");
+let ssimVideos = $(".ssim-video");
+let ssimVideoCurrentTime = 0;
+let mouseDown = null;
+
+const animateOverlap = () => {
+    left.animate({
+    'width': '640px'
+    }, 10);
+
+    right.animate({
+    'width': '640px'
+    }, 10);
+
+    rightContent.animate({
+    'margin-left': '-640px',
+    }, 10);
+}
+
+
+/**
+ * Sync the current time of main and ref videos
+ */
+const update_current_time_ssim = () => {
+    Array.from(ssimVideos).forEach((video) => {
+        video.currentTime = ssimVideoCurrentTime;
+    });
+}
+
+const add_ssim_video_event_listener = () => {
+    Array.from(ssimVideos).forEach((video) => {
+        video.addEventListener("play", () => {
+            Array.from(ssimVideos).forEach((video) => {
+                video.play();
+            });
+        });
+        video.addEventListener("pause", () => {
+            Array.from(ssimVideos).forEach((video) => {
+                video.pause();
+            });
+            ssimVideoCurrentTime = video.currentTime;
+            // in case of playback delay
+            update_current_time_ssim();
+            // sync frame range slider
+            let f_idx = get_cur_frame_idx("ssim");
+            slider.value = f_idx;
+            frameIdText.innerHTML = f_idx;
+        });
+        video.addEventListener("seeking", () => {
+            if (video.currentTime === ssimVideoCurrentTime) return;
+            ssimVideoCurrentTime = video.currentTime;
+            update_current_time_ssim();
+            let f_idx = get_cur_frame_idx("ssim");
+            slider.value = f_idx;
+            frameIdText.innerHTML = f_idx;
+        });
+    });
+}
+add_ssim_video_event_listener();
+
+const mousemove = (event) => {
+    if (!mouseDown) return false;
+    let dx = event.clientX - mouseDown.clientX;
+    left.width(left.width() + dx);
+    right.width(right.width() - dx);
+    rightContent.css('margin-left', -left.width() - bar.width());
+    mouseDown = event;
+};
+
+const mouseup = (event) => {
+    mouseDown = null;
+}
+
+bar.mousemove(mousemove);
+left.mouseup(mouseup);
+right.mouseup(mouseup);
+left.mousemove(mousemove);
+right.mousemove(mousemove);
+bar.mousedown((event) => {
+    mouseDown = event;
+});
+bar.mouseup(mouseup);
+
+// Setup the transition to be overlapping.
+setTimeout(animateOverlap, 1000);
+
+// frame range slider
+let slider = document.getElementById("frame-range-slider");
+let frameIdText = document.getElementById("frame-id");
+frameIdText.innerHTML = slider.value;
+
+const init_slider = () => {
+    slider.min = 0;
+    slider.max = frame_ts.length - 1;
+
+}
+init_slider();
+
+// Update the current slider value
+slider.oninput = function() {
+  frameIdText.innerHTML = this.value;
+}
+slider.onchange = function() {
+    let f_idx = this.value;
+    let offset = 0.001;
+    ssimVideoCurrentTime = Number(frame_ts[f_idx]) + offset;
+    update_current_time_ssim();
 }
