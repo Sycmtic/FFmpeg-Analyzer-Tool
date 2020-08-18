@@ -1,5 +1,5 @@
-from const import packets_str, size_str, dts_time_str, duration_time_str, x_str, y_str, codec_type_str, pts_time_str
-from ffmpeg import get_packets_info, get_qp_data
+from const import size_str, dts_time_str, duration_time_str, x_str, y_str, ssim_all_str
+from ffmpeg import get_packets_info, get_qp_data, get_ssim_data
 from graph import generate_line_graph
 
 
@@ -19,6 +19,18 @@ def generate_bitrate_qp_graph(file_path):
     return bitrate_graph, qp_graph, c_graph
 
 
+def generate_ssim_graph(main_file_path, ref_file_path):
+    """
+    Call ffmpeg to get ssim per frame and generate ssim graph
+    :param main_file_path: main video file path
+    :param ref_file_path: ref video file path
+    :return: <div> ssim graph
+    """
+    ssim_data = get_ssim_data(main_file_path, ref_file_path)
+    ssim_graph = generate_line_graph(compute_ssim(ssim_data))
+    return ssim_graph
+
+
 def compute_bitrate(packets):
     """
     Calculate the bitrate per frame
@@ -32,4 +44,17 @@ def compute_bitrate(packets):
         dts = packet[dts_time_str]
         data[x_str].append(dts)
         data[y_str].append(bitrate)
+    return data
+
+
+def compute_ssim(frame_ssim):
+    """
+    Parse SSIM data to an appropriate format
+    :param frame_ssim: SSIM per frame dict
+    :return: data (dict)
+    """
+    data = {x_str: [], y_str: []}
+    for f_idx, ssim in frame_ssim.items():
+        data[x_str].append(f_idx)
+        data[y_str].append(ssim[ssim_all_str])
     return data

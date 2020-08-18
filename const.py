@@ -46,3 +46,8 @@ pkt_pts_time_str = 'pkt_pts_time'
 side_data_list_str = 'side_data_list'
 side_data_type_str = 'side_data_type'
 block_data_list_str = 'block_data_list'
+# SSIM
+ssim_y_str = 'Y'
+ssim_u_str = 'U'
+ssim_v_str = 'V'
+ssim_all_str = 'All'

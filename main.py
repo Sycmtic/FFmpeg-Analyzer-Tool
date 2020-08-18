@@ -1,6 +1,6 @@
 import argparse
 
-from compute import generate_bitrate_qp_graph
+from compute import generate_bitrate_qp_graph, generate_ssim_graph
 from const import qp_str, bs_str, b_type_str, mv_str
 from ffmpeg import get_stream_info, generate_vis_video, get_frame_data, get_block_data
 from output import write_to_report_folder, create_report_folder, change_js_file_setting
@@ -14,7 +14,7 @@ def main():
     change_js_file_setting(args.frame_per_file)
     create_report_folder(args.outfile)
     vis_video_exe(args.infile, args.outfile, args.frame_per_file)
-    report_exe(file_name, args.infile, args.outfile)
+    report_exe(file_name, args.infile, args.outfile, args.main)
 
 
 def vis_video_exe(file_path, folder_path, frame_per_file):
@@ -39,16 +39,24 @@ def vis_video_exe(file_path, folder_path, frame_per_file):
     pool.join()
 
 
-def report_exe(file_name, file_path, folder_path):
+def report_exe(file_name, file_path, folder_path, main_file_path):
     """
     Generate HTML report
     :param file_name: name of input video
     :param file_path: input video path
+    :param main_file_path: main source video path, None if doesn't exist
     :param folder_path: output folder path
     """
     stream_info = get_stream_info(file_path)
     bitrate_plot, qp_plot, combined_graph = generate_bitrate_qp_graph(file_path)
-    write_to_report_folder(file_name, folder_path, stream_info, bitrate_plot, qp_plot, c_plot=combined_graph)
+    ssim_graph = None
+    if main_file_path is not None:
+        try:
+            ssim_graph = generate_ssim_graph(main_file_path, file_path)
+        except Exception as e:
+            logging.error(e)
+    write_to_report_folder(file_name, file_path, main_file_path, folder_path,
+                           stream_info, bitrate_plot, qp_plot, c_plot=combined_graph, ssim_div=ssim_graph)
 
 
 def frame_per_file_type(x):
@@ -65,6 +73,7 @@ def create_arg_parser():
     parser.add_argument('-s', '-show', help='show specific graph metrics', dest='show', action='store')
     parser.add_argument('-o', '-output', help="output report directory path", dest='outfile', action="store", required=True)
     parser.add_argument('-f', '-frameperfile', help="number of frame block data store in a file", dest='frame_per_file', type=frame_per_file_type, action="store", default=10)
+    parser.add_argument('-m', '-main', help="enable ssim with main and ref video", dest='main', action="store")
     args = parser.parse_args()
     return args
 

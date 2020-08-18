@@ -54,7 +54,7 @@ def generate_vis_video(file_path, folder_path, op):
     if which('ffmpeg') is None:
         raise Exception('No ffmpeg found in path')
     if op == mv_str:
-        cmd = 'ffmpeg -flags2 +export_mvs -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
+        cmd = 'ffmpeg -flags2 +export_mvs -export_side_data +venc_params -i ' + file_path + ' -vf codecview=mv=pf+bf+bb -y'
     else:
         cmd = 'ffmpeg -export_side_data +venc_params -i ' + file_path + ' -vf codecview=' + op + '=true -y'
     args = shlex.split(cmd)
@@ -93,15 +93,16 @@ def get_qp_data(file_path):
     return data
 
 
-def get_side_data_metric(line, name):
+def get_metric(line, name, split):
     """
-    Get side data metric from output line
+    Get metric value from output line
     :param line: console output line
     :param name: name of metric
+    :param split: split character
     :return: metric value
     """
     start = line.find(name) + len(name) + 1
-    end = line.find(';', start)
+    end = line.find(split, start)
     return line[start:end]
 
 
@@ -151,10 +152,10 @@ def get_frame_side_data(file_path, data):
             end = output.find(' ', start + 4)
             f_idx = int(output[start:end])
         if output.find(side_data_str) != -1:
-            data[f_idx][qp_str] = get_side_data_metric(output, qp_str)
+            data[f_idx][qp_str] = get_metric(output, qp_str, ';')
         data[f_idx][plane_delta_qp_str] = 0
         if output.find(plane_delta_qp_index) != -1:
-            data[f_idx][plane_delta_qp_str] = get_side_data_metric(output, plane_delta_qp_index)
+            data[f_idx][plane_delta_qp_str] = get_metric(output, plane_delta_qp_index, ';')
     return data
 
 
@@ -223,3 +224,45 @@ def get_block_data(file_path, frame_per_file):
     data = parse_block_data(output)
     # output block data to js
     split_data(data, frame_per_file)
+
+
+def parse_ssim_data(line):
+    """
+    Get SSIM value from output line
+    :param line: console output line
+    :return:
+    """
+    f_idx = get_metric(line, frame_index_str, ' ')
+    ssim_y = get_metric(line, 'Y', ' ')
+    ssim_u = get_metric(line, 'U', ' ')
+    ssim_v = get_metric(line, 'V', ' ')
+    ssim_all = get_metric(line, 'All', ' ')
+    return f_idx, ssim_y, ssim_u, ssim_v, ssim_all
+
+
+def get_ssim_data(main_file_path, ref_file_path):
+    """
+    Get SSIM per frame using ffmpeg
+    :param main_file_path: main video file path
+    :param ref_file_path: ref video file path
+    :return: SSIM
+    """
+    if which('ffmpeg') is None:
+        raise Exception('No ffmpeg found in path')
+    cmd = 'ffmpeg -i ' + main_file_path + ' -i ' + ref_file_path + ' -lavfi "ssim=stats_file=./stats.log" -f null -'
+    args = shlex.split(cmd)
+    proc = subprocess.Popen(args, stderr=subprocess.PIPE)
+    proc.communicate()
+    if proc.returncode != 0:
+        raise Exception("SSIM Fail. Please make sure both video inputs have same resolution, pixel format and number of frames")
+    data = {}
+    with open('./stats.log', 'r') as file:
+        for line in file:
+            f_idx, ssim_y, ssim_u, ssim_v, ssim_all = parse_ssim_data(line)
+            data[f_idx] = {}
+            data[f_idx][ssim_y_str] = ssim_y
+            data[f_idx][ssim_u_str] = ssim_u
+            data[f_idx][ssim_v_str] = ssim_v
+            data[f_idx][ssim_all_str] = ssim_all
+    os.remove('./stats.log')
+    return data
