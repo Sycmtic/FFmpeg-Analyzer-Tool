@@ -14,3 +14,5 @@ pip install -r requirements.txt
 ```
 python main.py -i <input_video> -o <output_report_dir>
 ```
+#### Note:
+Some of the features haven't been merged to FFmpeg yet. In order to use this tool, please clone a local version of FFmpeg in this Github branch (https://github.com/Sycmtic/FFmpeg/tree/local_env)
