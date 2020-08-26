@@ -7,13 +7,13 @@ video_stream_str = 'video_stream'
 audio_stream_str = 'audio_stream'
 
 # support file path
-audio_img_path = '/report/files/audio-icon.jpg'
-video_img_path = '/report/files/video.jpg'
-overlay_img_path = '/report/files/overlay.png'
-report_css_path = '/report/files/report.css'
-report_js_path = '/report/files/report.js'
-report_mapster_path = '/report/files/imagemapster.js'
-report_data_js_path = '/report/files/data.js'
+audio_img_path = './files/audio-icon.jpg'
+video_img_path = './files/video.jpg'
+overlay_img_path = './files/overlay.png'
+report_css_path = './files/report.css'
+report_js_path = './files/report.js'
+report_mapster_path = './files/imagemapster.js'
+report_data_js_path = './files/data.js'
 report_file_path = '/report/report.html'
 
 # tool attributes

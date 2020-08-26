@@ -3,6 +3,7 @@ let videoSelected = "qp";
 let videoCurrentTime = 0;
 let videos = document.getElementsByClassName("vis-video");
 let showBlockDetail = false;
+let offset = 0.001 /* offset between pst_start and pts to be set */
 
 
 /**
@@ -26,6 +27,9 @@ const add_video_event_listener = () => {
         });
         video.addEventListener("seeking", () => {
             if (video.currentTime === videoCurrentTime) return;
+            videoCurrentTime = video.currentTime;
+            let f_idx = get_cur_frame_idx("vis");
+            video.currentTime = Number(frame_ts[f_idx]) + offset;
             videoCurrentTime = video.currentTime;
             update_current_time();
             update_frame_detail_page();
@@ -55,7 +59,6 @@ const update_current_time = () => {
 const add_button_bar_listener = () => {
     document.getElementById("nxt-frame-btn").addEventListener("click", () => {
         let currentTime = videoCurrentTime;
-        let offset = 0.001;
         for (let i = 0; i < frame_ts.length; i++) {
             if (frame_ts[i] > currentTime) {
                 videos[0].currentTime = Number(frame_ts[i]) + offset;
@@ -67,7 +70,6 @@ const add_button_bar_listener = () => {
 
     document.getElementById("pre-frame-btn").addEventListener("click", () => {
         let currentTime = videoCurrentTime;
-        let offset = 0.001;
         for (let i = frame_ts.length - 1; i >= 1; i--) {
             if (frame_ts[i] < currentTime) {
                 videos[0].currentTime = Number(frame_ts[i - 1]) + offset;
@@ -409,7 +411,6 @@ slider.oninput = function() {
 }
 slider.onchange = function() {
     let f_idx = this.value;
-    let offset = 0.001;
     ssimVideoCurrentTime = Number(frame_ts[f_idx]) + offset;
     update_current_time_ssim();
 }

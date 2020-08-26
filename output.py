@@ -88,16 +88,9 @@ def write_to_html(file_name, main_file_name, folder_path, stream_info, bitrate_d
     :param qp_div: qp graph div
     """
     report = jinja_env.get_template('report.html')
-    audio_img_url = folder_path + audio_img_path
-    video_img_url = folder_path + video_img_path
-    overlay_img_url = folder_path + overlay_img_path
-    css_url = folder_path + report_css_path
-    js_url = folder_path + report_js_path
-    mapster_url = folder_path + report_mapster_path
-    data_url = folder_path + report_data_js_path
-    stream_info[audio_img_url_str] = audio_img_url
-    stream_info[video_img_url_str] = video_img_url
-    stream_info[overlay_img_url_str] = overlay_img_url
+    stream_info[audio_img_url_str] = audio_img_path
+    stream_info[video_img_url_str] = video_img_path
+    stream_info[overlay_img_url_str] = overlay_img_path
     stream_info[file_name_str] = file_name
     file_path = None
     if file_name is not None:
@@ -105,7 +98,7 @@ def write_to_html(file_name, main_file_name, folder_path, stream_info, bitrate_d
     main_file_path = None
     if main_file_name is not None:
         main_file_path = './' + main_file_name
-    html_string = report.render(css_url=css_url, js_url=js_url, mapster_url=mapster_url, data_js_url=data_url,
+    html_string = report.render(css_url=report_css_path, js_url=report_js_path, mapster_url=report_mapster_path, data_js_url=report_data_js_path,
                                 stream_info=stream_info, bitrate_div=bitrate_div, qp_div=qp_div, c_plot=c_plot,
                                 ssim_div=ssim_div, file_path=file_path, main_file_path=main_file_path)
     f = open(folder_path + report_file_path, 'w')
